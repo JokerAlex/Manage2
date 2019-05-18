@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzhy.manage.dao.UserInfoMapper">
+    <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.UserInfo">
+        <constructor>
+            <idArg column="user_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="username" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="password" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="roles" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="status" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="wx_open_id" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, username, password, name, roles, status, wx_open_id, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from user_info
+        where user_id = #{userId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from user_info
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.dzhy.manage.entity.UserInfo">
+        insert into user_info (user_id, username, password,
+                               name, roles, status,
+                               wx_open_id, create_time, update_time)
+        values (#{userId,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+                #{name,jdbcType=VARCHAR}, #{roles,jdbcType=VARCHAR}, #{status,jdbcType=INTEGER},
+                #{wxOpenId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.UserInfo"
+            useGeneratedKeys="true" keyProperty="userId">
+        insert into user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="username != null">
+                username,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="roles != null">
+                roles,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="wxOpenId != null">
+                wx_open_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="username != null">
+                #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="roles != null">
+                #{roles,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test="wxOpenId != null">
+                #{wxOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.UserInfo">
+        update user_info
+        <set>
+            <if test="username != null">
+                username = #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="roles != null">
+                roles = #{roles,jdbcType=VARCHAR},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=INTEGER},
+            </if>
+            <if test="wxOpenId != null">
+                wx_open_id = #{wxOpenId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.UserInfo">
+        update user_info
+        set username    = #{username,jdbcType=VARCHAR},
+            password    = #{password,jdbcType=VARCHAR},
+            name        = #{name,jdbcType=VARCHAR},
+            roles       = #{roles,jdbcType=VARCHAR},
+            status      = #{status,jdbcType=INTEGER},
+            wx_open_id  = #{wxOpenId,jdbcType=VARCHAR},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <select id="selectByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from user_info
+        where username = #{username}
+    </select>
+    <delete id="deleteByIds" parameterType="list">
+        delete from user_info
+        where user_id in
+        <foreach collection="userIds" separator="," open="(" close=")" item="item">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="selectAll" resultMap="BaseResultMap" parameterType="string">
+        select
+        <include refid="Base_Column_List"/>
+        from user_info
+        <where>
+            <if test="name != null">name like CONCAT('%',#{name},'%')</if>
+        </where>
+    </select>
+</mapper>

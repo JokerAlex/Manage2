@@ -1,0 +1,29 @@
+server:
+  servlet:
+    context-path: /api
+  port: 8090
+
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/manage2?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: manager
+    password: 1234567890
+  servlet:
+    multipart:
+      max-request-size: 10MB
+      max-file-size: 2MB
+  mail:
+    host: smtp.163.com
+    username: xxx@163.com
+    password: xxx
+    default-encoding: UTF-8
+
+manage:
+  fileType: .jpg,.png,.gif,.tif,.psd,.dng.,cr2,.nef
+  files:
+    path: /Users/alex/program/IdeaProjects/manage
+  mail:
+    to: xxx@gmail.com
+  img:
+    filePath: /Users/alex/Downloads

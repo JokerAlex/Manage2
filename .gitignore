@@ -1,0 +1,56 @@
+HELP.md
+/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+/build/
+
+### VS Code ###
+.vscode/
+
+
+*.class
+
+# package file
+*.war
+*.ear
+
+# temp file
+*.log
+*.cache
+*.diff
+*.patch
+*.tmp
+
+# system
+.DS_Store
+Thumbs.db
+
+mvnw
+mvnw.cmd
+
+application-dev.yml
+application-prod.yml
+parameter.sh
+
+/Excles

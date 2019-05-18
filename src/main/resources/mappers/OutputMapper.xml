@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzhy.manage.dao.OutputMapper" >
+  <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.Output" >
+    <constructor >
+      <idArg column="output_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="output_name" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="sku_price" jdbcType="REAL" javaType="java.lang.Float" />
+      <arg column="xia_dan" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="mu_gong" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="you_fang" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="bao_zhuang" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="te_ding" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="beijing_input" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="beijing_teding_input" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="factory_output" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="teding_factory_output" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="beijing_stock" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="beijing_teding_stock" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    output_id, product_id, output_name, sku_id, sku_price, xia_dan, mu_gong, you_fang, 
+    bao_zhuang, te_ding, beijing_input, beijing_teding_input, factory_output, teding_factory_output, 
+    beijing_stock, beijing_teding_stock, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from output
+    where output_id = #{outputId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from output
+    where output_id = #{outputId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dzhy.manage.entity.Output" >
+    insert into output (output_id, product_id, output_name, 
+      sku_id, sku_price, xia_dan, 
+      mu_gong, you_fang, bao_zhuang, 
+      te_ding, beijing_input, beijing_teding_input, 
+      factory_output, teding_factory_output, beijing_stock, 
+      beijing_teding_stock, create_time, update_time
+      )
+    values (#{outputId,jdbcType=BIGINT}, #{productId,jdbcType=INTEGER}, #{outputName,jdbcType=VARCHAR}, 
+      #{skuId,jdbcType=INTEGER}, #{skuPrice,jdbcType=REAL}, #{xiaDan,jdbcType=INTEGER}, 
+      #{muGong,jdbcType=INTEGER}, #{youFang,jdbcType=INTEGER}, #{baoZhuang,jdbcType=INTEGER}, 
+      #{teDing,jdbcType=INTEGER}, #{beijingInput,jdbcType=INTEGER}, #{beijingTedingInput,jdbcType=INTEGER}, 
+      #{factoryOutput,jdbcType=INTEGER}, #{tedingFactoryOutput,jdbcType=INTEGER}, #{beijingStock,jdbcType=INTEGER}, 
+      #{beijingTedingStock,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Output" >
+    insert into output
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="outputId != null" >
+        output_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="outputName != null" >
+        output_name,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="skuPrice != null" >
+        sku_price,
+      </if>
+      <if test="xiaDan != null" >
+        xia_dan,
+      </if>
+      <if test="muGong != null" >
+        mu_gong,
+      </if>
+      <if test="youFang != null" >
+        you_fang,
+      </if>
+      <if test="baoZhuang != null" >
+        bao_zhuang,
+      </if>
+      <if test="teDing != null" >
+        te_ding,
+      </if>
+      <if test="beijingInput != null" >
+        beijing_input,
+      </if>
+      <if test="beijingTedingInput != null" >
+        beijing_teding_input,
+      </if>
+      <if test="factoryOutput != null" >
+        factory_output,
+      </if>
+      <if test="tedingFactoryOutput != null" >
+        teding_factory_output,
+      </if>
+      <if test="beijingStock != null" >
+        beijing_stock,
+      </if>
+      <if test="beijingTedingStock != null" >
+        beijing_teding_stock,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="outputId != null" >
+        #{outputId,jdbcType=BIGINT},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="outputName != null" >
+        #{outputName,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="skuPrice != null" >
+        #{skuPrice,jdbcType=REAL},
+      </if>
+      <if test="xiaDan != null" >
+        #{xiaDan,jdbcType=INTEGER},
+      </if>
+      <if test="muGong != null" >
+        #{muGong,jdbcType=INTEGER},
+      </if>
+      <if test="youFang != null" >
+        #{youFang,jdbcType=INTEGER},
+      </if>
+      <if test="baoZhuang != null" >
+        #{baoZhuang,jdbcType=INTEGER},
+      </if>
+      <if test="teDing != null" >
+        #{teDing,jdbcType=INTEGER},
+      </if>
+      <if test="beijingInput != null" >
+        #{beijingInput,jdbcType=INTEGER},
+      </if>
+      <if test="beijingTedingInput != null" >
+        #{beijingTedingInput,jdbcType=INTEGER},
+      </if>
+      <if test="factoryOutput != null" >
+        #{factoryOutput,jdbcType=INTEGER},
+      </if>
+      <if test="tedingFactoryOutput != null" >
+        #{tedingFactoryOutput,jdbcType=INTEGER},
+      </if>
+      <if test="beijingStock != null" >
+        #{beijingStock,jdbcType=INTEGER},
+      </if>
+      <if test="beijingTedingStock != null" >
+        #{beijingTedingStock,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.Output" >
+    update output
+    <set >
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="outputName != null" >
+        output_name = #{outputName,jdbcType=VARCHAR},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="skuPrice != null" >
+        sku_price = #{skuPrice,jdbcType=REAL},
+      </if>
+      <if test="xiaDan != null" >
+        xia_dan = #{xiaDan,jdbcType=INTEGER},
+      </if>
+      <if test="muGong != null" >
+        mu_gong = #{muGong,jdbcType=INTEGER},
+      </if>
+      <if test="youFang != null" >
+        you_fang = #{youFang,jdbcType=INTEGER},
+      </if>
+      <if test="baoZhuang != null" >
+        bao_zhuang = #{baoZhuang,jdbcType=INTEGER},
+      </if>
+      <if test="teDing != null" >
+        te_ding = #{teDing,jdbcType=INTEGER},
+      </if>
+      <if test="beijingInput != null" >
+        beijing_input = #{beijingInput,jdbcType=INTEGER},
+      </if>
+      <if test="beijingTedingInput != null" >
+        beijing_teding_input = #{beijingTedingInput,jdbcType=INTEGER},
+      </if>
+      <if test="factoryOutput != null" >
+        factory_output = #{factoryOutput,jdbcType=INTEGER},
+      </if>
+      <if test="tedingFactoryOutput != null" >
+        teding_factory_output = #{tedingFactoryOutput,jdbcType=INTEGER},
+      </if>
+      <if test="beijingStock != null" >
+        beijing_stock = #{beijingStock,jdbcType=INTEGER},
+      </if>
+      <if test="beijingTedingStock != null" >
+        beijing_teding_stock = #{beijingTedingStock,jdbcType=INTEGER},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where output_id = #{outputId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.Output" >
+    update output
+    set product_id = #{productId,jdbcType=INTEGER},
+      output_name = #{outputName,jdbcType=VARCHAR},
+      sku_id = #{skuId,jdbcType=INTEGER},
+      sku_price = #{skuPrice,jdbcType=REAL},
+      xia_dan = #{xiaDan,jdbcType=INTEGER},
+      mu_gong = #{muGong,jdbcType=INTEGER},
+      you_fang = #{youFang,jdbcType=INTEGER},
+      bao_zhuang = #{baoZhuang,jdbcType=INTEGER},
+      te_ding = #{teDing,jdbcType=INTEGER},
+      beijing_input = #{beijingInput,jdbcType=INTEGER},
+      beijing_teding_input = #{beijingTedingInput,jdbcType=INTEGER},
+      factory_output = #{factoryOutput,jdbcType=INTEGER},
+      teding_factory_output = #{tedingFactoryOutput,jdbcType=INTEGER},
+      beijing_stock = #{beijingStock,jdbcType=INTEGER},
+      beijing_teding_stock = #{beijingTedingStock,jdbcType=INTEGER},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where output_id = #{outputId,jdbcType=BIGINT}
+  </update>
+</mapper>

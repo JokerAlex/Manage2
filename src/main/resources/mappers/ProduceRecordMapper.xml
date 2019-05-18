@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dzhy.manage.dao.ProduceRecordMapper" >
+  <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.ProduceRecord" >
+    <constructor >
+      <idArg column="record_id" jdbcType="BIGINT" javaType="java.lang.Long" />
+      <arg column="user_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="col_name1" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="value1" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="col_name2" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="value2" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="col_name3" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="value3" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="comments" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    record_id, user_id, product_id, sku_id, col_name1, value1, col_name2, value2, col_name3, 
+    value3, comments, create_time, update_time
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from produce_record
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from produce_record
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.dzhy.manage.entity.ProduceRecord" >
+    insert into produce_record (record_id, user_id, product_id, 
+      sku_id, col_name1, value1, 
+      col_name2, value2, col_name3, 
+      value3, comments, create_time, 
+      update_time)
+    values (#{recordId,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, 
+      #{skuId,jdbcType=INTEGER}, #{colName1,jdbcType=VARCHAR}, #{value1,jdbcType=INTEGER}, 
+      #{colName2,jdbcType=VARCHAR}, #{value2,jdbcType=INTEGER}, #{colName3,jdbcType=VARCHAR}, 
+      #{value3,jdbcType=INTEGER}, #{comments,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="com.dzhy.manage.entity.ProduceRecord" >
+    insert into produce_record
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        record_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="productId != null" >
+        product_id,
+      </if>
+      <if test="skuId != null" >
+        sku_id,
+      </if>
+      <if test="colName1 != null" >
+        col_name1,
+      </if>
+      <if test="value1 != null" >
+        value1,
+      </if>
+      <if test="colName2 != null" >
+        col_name2,
+      </if>
+      <if test="value2 != null" >
+        value2,
+      </if>
+      <if test="colName3 != null" >
+        col_name3,
+      </if>
+      <if test="value3 != null" >
+        value3,
+      </if>
+      <if test="comments != null" >
+        comments,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="recordId != null" >
+        #{recordId,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="colName1 != null" >
+        #{colName1,jdbcType=VARCHAR},
+      </if>
+      <if test="value1 != null" >
+        #{value1,jdbcType=INTEGER},
+      </if>
+      <if test="colName2 != null" >
+        #{colName2,jdbcType=VARCHAR},
+      </if>
+      <if test="value2 != null" >
+        #{value2,jdbcType=INTEGER},
+      </if>
+      <if test="colName3 != null" >
+        #{colName3,jdbcType=VARCHAR},
+      </if>
+      <if test="value3 != null" >
+        #{value3,jdbcType=INTEGER},
+      </if>
+      <if test="comments != null" >
+        #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.ProduceRecord" >
+    update produce_record
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=INTEGER},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=INTEGER},
+      </if>
+      <if test="colName1 != null" >
+        col_name1 = #{colName1,jdbcType=VARCHAR},
+      </if>
+      <if test="value1 != null" >
+        value1 = #{value1,jdbcType=INTEGER},
+      </if>
+      <if test="colName2 != null" >
+        col_name2 = #{colName2,jdbcType=VARCHAR},
+      </if>
+      <if test="value2 != null" >
+        value2 = #{value2,jdbcType=INTEGER},
+      </if>
+      <if test="colName3 != null" >
+        col_name3 = #{colName3,jdbcType=VARCHAR},
+      </if>
+      <if test="value3 != null" >
+        value3 = #{value3,jdbcType=INTEGER},
+      </if>
+      <if test="comments != null" >
+        comments = #{comments,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.ProduceRecord" >
+    update produce_record
+    set user_id = #{userId,jdbcType=INTEGER},
+      product_id = #{productId,jdbcType=INTEGER},
+      sku_id = #{skuId,jdbcType=INTEGER},
+      col_name1 = #{colName1,jdbcType=VARCHAR},
+      value1 = #{value1,jdbcType=INTEGER},
+      col_name2 = #{colName2,jdbcType=VARCHAR},
+      value2 = #{value2,jdbcType=INTEGER},
+      col_name3 = #{colName3,jdbcType=VARCHAR},
+      value3 = #{value3,jdbcType=INTEGER},
+      comments = #{comments,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where record_id = #{recordId,jdbcType=BIGINT}
+  </update>
+</mapper>
