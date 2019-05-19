@@ -19,9 +19,25 @@ import java.util.Map;
 @Slf4j
 public class FileUtil {
 
+    public static void upload(MultipartFile multipartFile, String path, String newName) throws GeneralException {
+        try (
+                FileOutputStream out = new FileOutputStream(path + "/" + newName)
+        ) {
+            File targetFile = new File(path);
+            if (!targetFile.exists()) {
+                targetFile.mkdirs();
+            }
+            out.write(multipartFile.getBytes());
+            out.flush();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new GeneralException("文件上传失败");
+        }
+    }
+
     public static void upload(Map<String, MultipartFile> map, String path) throws GeneralException {
         for (Map.Entry<String, MultipartFile> entry : map.entrySet()) {
-            try(
+            try (
                     FileOutputStream out = new FileOutputStream(path + "/" + entry.getKey())
             ) {
                 File targetFile = new File(path);
@@ -33,7 +49,6 @@ public class FileUtil {
             } catch (IOException e) {
                 log.error(e.getMessage());
                 throw new GeneralException("文件上传失败");
-            } finally {
             }
         }
     }

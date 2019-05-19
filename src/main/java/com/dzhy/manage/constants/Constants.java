@@ -18,6 +18,13 @@ public final class Constants {
     /**
      * 产品表列名称
      */
+    public static final String PRODUCT_NAME = "产品名称";
+
+    public static final String CATEGORY_ID = "类别ID";
+
+    public static final String HEAD_IMG = "主图";
+
+    public static final String IMG = "图片";
 
     public static final String PRICE = "价格";
 
@@ -26,7 +33,6 @@ public final class Constants {
     /**
      * 进度表列名称
      */
-    public static final String PRODUCT_NAME = "产品名称";
 
     public static final String XIA_DAN = "下单";
 

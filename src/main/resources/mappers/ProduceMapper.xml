@@ -246,4 +246,10 @@
         set suk_price = #{price}
         where suk_id = #{sukId}
     </update>
+    <select id="selectByIdAndDate" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from produce
+        where date = #{date} and product_id = #{productId}
+    </select>
 </mapper>

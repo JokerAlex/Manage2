@@ -1,7 +1,10 @@
 package com.dzhy.manage.entity;
 
+import lombok.Builder;
+
 import java.util.Date;
 
+@Builder
 public class Product {
     private Integer productId;
 
