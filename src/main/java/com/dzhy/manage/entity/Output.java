@@ -1,17 +1,22 @@
 package com.dzhy.manage.entity;
 
+import lombok.Builder;
+
 import java.util.Date;
 
+@Builder
 public class Output {
     private Long outputId;
+
+    private Integer month;
 
     private Integer productId;
 
     private String outputName;
 
-    private Integer skuId;
+    private Integer sukId;
 
-    private Float skuPrice;
+    private Float sukPrice;
 
     private Integer xiaDan;
 
@@ -39,12 +44,13 @@ public class Output {
 
     private Date updateTime;
 
-    public Output(Long outputId, Integer productId, String outputName, Integer skuId, Float skuPrice, Integer xiaDan, Integer muGong, Integer youFang, Integer baoZhuang, Integer teDing, Integer beijingInput, Integer beijingTedingInput, Integer factoryOutput, Integer tedingFactoryOutput, Integer beijingStock, Integer beijingTedingStock, Date createTime, Date updateTime) {
+    public Output(Long outputId, Integer month, Integer productId, String outputName, Integer sukId, Float sukPrice, Integer xiaDan, Integer muGong, Integer youFang, Integer baoZhuang, Integer teDing, Integer beijingInput, Integer beijingTedingInput, Integer factoryOutput, Integer tedingFactoryOutput, Integer beijingStock, Integer beijingTedingStock, Date createTime, Date updateTime) {
         this.outputId = outputId;
+        this.month = month;
         this.productId = productId;
         this.outputName = outputName;
-        this.skuId = skuId;
-        this.skuPrice = skuPrice;
+        this.sukId = sukId;
+        this.sukPrice = sukPrice;
         this.xiaDan = xiaDan;
         this.muGong = muGong;
         this.youFang = youFang;
@@ -72,6 +78,14 @@ public class Output {
         this.outputId = outputId;
     }
 
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
     public Integer getProductId() {
         return productId;
     }
@@ -88,20 +102,20 @@ public class Output {
         this.outputName = outputName == null ? null : outputName.trim();
     }
 
-    public Integer getSkuId() {
-        return skuId;
+    public Integer getSukId() {
+        return sukId;
     }
 
-    public void setSkuId(Integer skuId) {
-        this.skuId = skuId;
+    public void setSukId(Integer sukId) {
+        this.sukId = sukId;
     }
 
-    public Float getSkuPrice() {
-        return skuPrice;
+    public Float getSukPrice() {
+        return sukPrice;
     }
 
-    public void setSkuPrice(Float skuPrice) {
-        this.skuPrice = skuPrice;
+    public void setSukPrice(Float sukPrice) {
+        this.sukPrice = sukPrice;
     }
 
     public Integer getXiaDan() {

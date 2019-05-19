@@ -22,5 +22,5 @@ public interface ProduceMapper {
 
     List<Produce> selectBySukId(int sukId);
 
-    int updatePrice(@Param("sukId") int sukId,@Param("price") float price);
+    int updatePrice(@Param("sukId") int sukId, @Param("price") float price);
 }

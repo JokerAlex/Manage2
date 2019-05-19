@@ -23,10 +23,11 @@ CREATE TABLE `category` (
 DROP TABLE IF EXISTS `output`;
 CREATE TABLE `output` (
   `output_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '产值ID',
+  `month` int(11) NOT NULL COMMENT '月份',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
   `output_name` varchar(64) NOT NULL COMMENT '产值产品名称',
-  `sku_id` int(11) NOT NULL DEFAULT '0' COMMENT 'skuId',
-  `sku_price` float NOT NULL DEFAULT '0' COMMENT '产品价格',
+  `suk_id` int(11) NOT NULL DEFAULT '0' COMMENT 'skuId',
+  `suk_price` float NOT NULL DEFAULT '0' COMMENT '产品价格',
   `xia_dan` int(11) NOT NULL DEFAULT '0' COMMENT '下单',
   `mu_gong` int(11) NOT NULL DEFAULT '0' COMMENT '木工',
   `you_fang` int(11) NOT NULL DEFAULT '0' COMMENT '油房',
@@ -41,8 +42,8 @@ CREATE TABLE `output` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`output_id`),
-  KEY `index_productid_skuid`(`sku_id`,`product_id`),
-  KEY `index_createtime` (`create_time`)
+  KEY `index_productid_sukid`(`suk_id`,`product_id`),
+  KEY `index_month` (`month`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '产值表';
 
 --
@@ -54,14 +55,14 @@ CREATE TABLE `output_record` (
   `record_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '记录ID',
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
-  `sku_id` int(11) NOT NULL DEFAULT '0' COMMENT 'skuId',
+  `suk_id` int(11) NOT NULL DEFAULT '0' COMMENT 'sukId',
   `col_name` varchar(64) NOT NULL COMMENT '变化项',
   `value` int(11) NOT NULL DEFAULT '0' COMMENT '变化值',
   `comments` varchar(256) NOT NULL COMMENT '备注',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`record_id`),
-  KEY `index_productid_skuid` (`sku_id`,`product_id`)
+  KEY `index_productid_sukid` (`suk_id`,`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '产值记录表';
 
 --
@@ -71,10 +72,11 @@ CREATE TABLE `output_record` (
 DROP TABLE IF EXISTS `produce`;
 CREATE TABLE `produce` (
   `produce_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '进度ID',
+  `date` int(11) NOT NULL COMMENT '日期',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
   `produce_name` varchar(64) NOT NULL COMMENT '进度产品名称',
-  `sku_id` int(11) NOT NULL DEFAULT '0' COMMENT 'skuId',
-  `sku_price` float NOT NULL DEFAULT '0' COMMENT 'sku价格',
+  `suk_id` int(11) NOT NULL DEFAULT '0' COMMENT 'sukId',
+  `suk_price` float NOT NULL DEFAULT '0' COMMENT 'suk价格',
   `xia_dan` int(11) NOT NULL DEFAULT '0' COMMENT '下单',
   `mu_gong` int(11) NOT NULL DEFAULT '0' COMMENT '木工',
   `you_fang` int(11) NOT NULL DEFAULT '0' COMMENT '油房',
@@ -87,8 +89,8 @@ CREATE TABLE `produce` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`produce_id`),
-  KEY `index_productid_skuid` (`sku_id`,`product_id`),
-  KEY `index_createtime` (`create_time`)
+  KEY `index_productid_sukid` (`suk_id`,`product_id`),
+  KEY `index_date` (`date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '生产进度表';
 
 --
@@ -100,7 +102,7 @@ CREATE TABLE `produce_record` (
   `record_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '记录ID',
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
-  `sku_id` int(11) NOT NULL DEFAULT '0' COMMENT 'skuId',
+  `suk_id` int(11) NOT NULL DEFAULT '0' COMMENT 'sukId',
   `col_name1` varchar(64) NOT NULL COMMENT '变化项1',
   `value1` int(11) NOT NULL DEFAULT '0' COMMENT '变化值1',
   `col_name2` varchar(64) NOT NULL COMMENT '变化项2',
@@ -111,7 +113,7 @@ CREATE TABLE `produce_record` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`record_id`),
-  KEY `index_productid_skuid` (`sku_id`,`product_id`)
+  KEY `index_productid_sukid` (`suk_id`,`product_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '生产进度记录表';
 
 --
@@ -137,15 +139,15 @@ CREATE TABLE `product` (
 
 DROP TABLE IF EXISTS `product_suk`;
 CREATE TABLE `product_suk` (
-  `sku_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'skuId',
+  `suk_id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'sukId',
   `product_id` int(11) NOT NULL COMMENT '产品Id',
-  `sku_name` varchar(64) NOT NULL COMMENT 'sku名称',
-  `price` float NOT NULL COMMENT 'sku价格',
+  `suk_name` varchar(64) NOT NULL COMMENT 'suk名称',
+  `price` float NOT NULL COMMENT 'suk价格',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`sku_id`),
+  PRIMARY KEY (`suk_id`),
   KEY `index_productid` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '产品sku表';
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '产品suk表';
 
 --
 -- Table structure for table `user_info`

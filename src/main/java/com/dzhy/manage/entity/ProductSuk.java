@@ -6,11 +6,11 @@ import java.util.Date;
 
 @Builder
 public class ProductSuk {
-    private Integer skuId;
+    private Integer sukId;
 
     private Integer productId;
 
-    private String skuName;
+    private String sukName;
 
     private Float price;
 
@@ -18,10 +18,10 @@ public class ProductSuk {
 
     private Date updateTime;
 
-    public ProductSuk(Integer skuId, Integer productId, String skuName, Float price, Date createTime, Date updateTime) {
-        this.skuId = skuId;
+    public ProductSuk(Integer sukId, Integer productId, String sukName, Float price, Date createTime, Date updateTime) {
+        this.sukId = sukId;
         this.productId = productId;
-        this.skuName = skuName;
+        this.sukName = sukName;
         this.price = price;
         this.createTime = createTime;
         this.updateTime = updateTime;
@@ -31,12 +31,12 @@ public class ProductSuk {
         super();
     }
 
-    public Integer getSkuId() {
-        return skuId;
+    public Integer getSukId() {
+        return sukId;
     }
 
-    public void setSkuId(Integer skuId) {
-        this.skuId = skuId;
+    public void setSukId(Integer sukId) {
+        this.sukId = sukId;
     }
 
     public Integer getProductId() {
@@ -47,12 +47,12 @@ public class ProductSuk {
         this.productId = productId;
     }
 
-    public String getSkuName() {
-        return skuName;
+    public String getSukName() {
+        return sukName;
     }
 
-    public void setSkuName(String skuName) {
-        this.skuName = skuName == null ? null : skuName.trim();
+    public void setSukName(String sukName) {
+        this.sukName = sukName == null ? null : sukName.trim();
     }
 
     public Float getPrice() {

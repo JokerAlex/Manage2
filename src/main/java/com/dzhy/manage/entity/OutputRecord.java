@@ -1,7 +1,10 @@
 package com.dzhy.manage.entity;
 
+import lombok.Builder;
+
 import java.util.Date;
 
+@Builder
 public class OutputRecord {
     private Long recordId;
 
@@ -9,7 +12,7 @@ public class OutputRecord {
 
     private Integer productId;
 
-    private Integer skuId;
+    private Integer sukId;
 
     private String colName;
 
@@ -21,11 +24,11 @@ public class OutputRecord {
 
     private Date updateTime;
 
-    public OutputRecord(Long recordId, Integer userId, Integer productId, Integer skuId, String colName, Integer value, String comments, Date createTime, Date updateTime) {
+    public OutputRecord(Long recordId, Integer userId, Integer productId, Integer sukId, String colName, Integer value, String comments, Date createTime, Date updateTime) {
         this.recordId = recordId;
         this.userId = userId;
         this.productId = productId;
-        this.skuId = skuId;
+        this.sukId = sukId;
         this.colName = colName;
         this.value = value;
         this.comments = comments;
@@ -61,12 +64,12 @@ public class OutputRecord {
         this.productId = productId;
     }
 
-    public Integer getSkuId() {
-        return skuId;
+    public Integer getSukId() {
+        return sukId;
     }
 
-    public void setSkuId(Integer skuId) {
-        this.skuId = skuId;
+    public void setSukId(Integer sukId) {
+        this.sukId = sukId;
     }
 
     public String getColName() {

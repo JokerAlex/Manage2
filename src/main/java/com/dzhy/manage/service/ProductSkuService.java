@@ -48,7 +48,7 @@ public class ProductSkuService {
         productSukList = productSukList.stream()
                 .map(suk -> ProductSuk.builder()
                         .productId(suk.getProductId())
-                        .skuName(suk.getSkuName())
+                        .sukName(suk.getSukName())
                         .price(suk.getPrice())
                         .build())
                 .collect(Collectors.toList());
@@ -64,15 +64,15 @@ public class ProductSkuService {
 
     @Transactional(rollbackFor = GeneralException.class)
     public Result updateProductSuk(ProductSuk productSuk) throws GeneralException {
-        if (productSuk == null || productSuk.getSkuId() == null || productSuk.getProductId() == null) {
+        if (productSuk == null || productSuk.getSukId() == null || productSuk.getProductId() == null) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
-        ProductSuk source = productSukMapper.selectByPrimaryKey(productSuk.getSkuId());
+        ProductSuk source = productSukMapper.selectByPrimaryKey(productSuk.getSukId());
         boolean price = source.getPrice().equals(productSuk.getPrice());
         ProductSuk update = ProductSuk.builder()
-                .skuId(productSuk.getSkuId())
+                .sukId(productSuk.getSukId())
                 .productId(productSuk.getProductId())
-                .skuName(productSuk.getSkuName())
+                .sukName(productSuk.getSukName())
                 .price(productSuk.getPrice())
                 .build();
         try {
@@ -80,9 +80,9 @@ public class ProductSkuService {
             log.info("update productSuk productId:{}, count:{}", update.getProductId(), count);
             if (!price) {
                 //价格修改
-                count = produceMapper.updatePrice(update.getSkuId(), update.getPrice());
+                count = produceMapper.updatePrice(update.getSukId(), update.getPrice());
                 log.info("update produce price, count:{}, price:{}", count, update.getPrice());
-                count = outputMapper.updatePrice(update.getSkuId(), update.getPrice());
+                count = outputMapper.updatePrice(update.getSukId(), update.getPrice());
                 log.info("update output price, count:{}, price:{}", count, update.getPrice());
             }
         } catch (Exception e) {

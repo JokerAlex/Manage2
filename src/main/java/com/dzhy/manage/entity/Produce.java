@@ -8,13 +8,15 @@ import java.util.Date;
 public class Produce {
     private Long produceId;
 
+    private Integer date;
+
     private Integer productId;
 
     private String produceName;
 
-    private Integer skuId;
+    private Integer sukId;
 
-    private Float skuPrice;
+    private Float sukPrice;
 
     private Integer xiaDan;
 
@@ -38,12 +40,13 @@ public class Produce {
 
     private Date updateTime;
 
-    public Produce(Long produceId, Integer productId, String produceName, Integer skuId, Float skuPrice, Integer xiaDan, Integer muGong, Integer youFang, Integer baoZhuang, Integer teDing, Integer beijing, Integer beijingTeding, Integer bendiHetong, Integer waidiHetong, Date createTime, Date updateTime) {
+    public Produce(Long produceId, Integer date, Integer productId, String produceName, Integer sukId, Float sukPrice, Integer xiaDan, Integer muGong, Integer youFang, Integer baoZhuang, Integer teDing, Integer beijing, Integer beijingTeding, Integer bendiHetong, Integer waidiHetong, Date createTime, Date updateTime) {
         this.produceId = produceId;
+        this.date = date;
         this.productId = productId;
         this.produceName = produceName;
-        this.skuId = skuId;
-        this.skuPrice = skuPrice;
+        this.sukId = sukId;
+        this.sukPrice = sukPrice;
         this.xiaDan = xiaDan;
         this.muGong = muGong;
         this.youFang = youFang;
@@ -69,6 +72,14 @@ public class Produce {
         this.produceId = produceId;
     }
 
+    public Integer getDate() {
+        return date;
+    }
+
+    public void setDate(Integer date) {
+        this.date = date;
+    }
+
     public Integer getProductId() {
         return productId;
     }
@@ -85,20 +96,20 @@ public class Produce {
         this.produceName = produceName == null ? null : produceName.trim();
     }
 
-    public Integer getSkuId() {
-        return skuId;
+    public Integer getSukId() {
+        return sukId;
     }
 
-    public void setSkuId(Integer skuId) {
-        this.skuId = skuId;
+    public void setSukId(Integer sukId) {
+        this.sukId = sukId;
     }
 
-    public Float getSkuPrice() {
-        return skuPrice;
+    public Float getSukPrice() {
+        return sukPrice;
     }
 
-    public void setSkuPrice(Float skuPrice) {
-        this.skuPrice = skuPrice;
+    public void setSukPrice(Float sukPrice) {
+        this.sukPrice = sukPrice;
     }
 
     public Integer getXiaDan() {

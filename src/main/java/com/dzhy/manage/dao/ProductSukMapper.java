@@ -7,13 +7,13 @@ import java.util.List;
 
 @Repository
 public interface ProductSukMapper {
-    int deleteByPrimaryKey(Integer skuId);
+    int deleteByPrimaryKey(Integer sukId);
 
     int insert(ProductSuk record);
 
     int insertSelective(ProductSuk record);
 
-    ProductSuk selectByPrimaryKey(Integer skuId);
+    ProductSuk selectByPrimaryKey(Integer sukId);
 
     int updateByPrimaryKeySelective(ProductSuk record);
 

@@ -6,7 +6,7 @@
       <idArg column="record_id" jdbcType="BIGINT" javaType="java.lang.Long" />
       <arg column="user_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
+      <arg column="suk_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="col_name" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="value" jdbcType="INTEGER" javaType="java.lang.Integer" />
       <arg column="comments" jdbcType="VARCHAR" javaType="java.lang.String" />
@@ -15,7 +15,7 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    record_id, user_id, product_id, sku_id, col_name, value, comments, create_time, update_time
+    record_id, user_id, product_id, suk_id, col_name, value, comments, create_time, update_time
   </sql>
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
@@ -29,11 +29,11 @@
   </delete>
   <insert id="insert" parameterType="com.dzhy.manage.entity.OutputRecord" >
     insert into output_record (record_id, user_id, product_id, 
-      sku_id, col_name, value, 
+      suk_id, col_name, value, 
       comments, create_time, update_time
       )
     values (#{recordId,jdbcType=BIGINT}, #{userId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, 
-      #{skuId,jdbcType=INTEGER}, #{colName,jdbcType=VARCHAR}, #{value,jdbcType=INTEGER}, 
+      #{sukId,jdbcType=INTEGER}, #{colName,jdbcType=VARCHAR}, #{value,jdbcType=INTEGER}, 
       #{comments,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
       )
   </insert>
@@ -49,8 +49,8 @@
       <if test="productId != null" >
         product_id,
       </if>
-      <if test="skuId != null" >
-        sku_id,
+      <if test="sukId != null" >
+        suk_id,
       </if>
       <if test="colName != null" >
         col_name,
@@ -78,8 +78,8 @@
       <if test="productId != null" >
         #{productId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null" >
-        #{skuId,jdbcType=INTEGER},
+      <if test="sukId != null" >
+        #{sukId,jdbcType=INTEGER},
       </if>
       <if test="colName != null" >
         #{colName,jdbcType=VARCHAR},
@@ -107,8 +107,8 @@
       <if test="productId != null" >
         product_id = #{productId,jdbcType=INTEGER},
       </if>
-      <if test="skuId != null" >
-        sku_id = #{skuId,jdbcType=INTEGER},
+      <if test="sukId != null" >
+        suk_id = #{sukId,jdbcType=INTEGER},
       </if>
       <if test="colName != null" >
         col_name = #{colName,jdbcType=VARCHAR},
@@ -132,7 +132,7 @@
     update output_record
     set user_id = #{userId,jdbcType=INTEGER},
       product_id = #{productId,jdbcType=INTEGER},
-      sku_id = #{skuId,jdbcType=INTEGER},
+      suk_id = #{sukId,jdbcType=INTEGER},
       col_name = #{colName,jdbcType=VARCHAR},
       value = #{value,jdbcType=INTEGER},
       comments = #{comments,jdbcType=VARCHAR},
