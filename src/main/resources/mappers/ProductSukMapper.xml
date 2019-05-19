@@ -1,108 +1,127 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.dzhy.manage.dao.ProductSukMapper" >
-  <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.ProductSuk" >
-    <constructor >
-      <idArg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="sku_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="price" jdbcType="REAL" javaType="java.lang.Float" />
-      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-    </constructor>
-  </resultMap>
-  <sql id="Base_Column_List" >
-    sku_id, product_id, sku_name, price, create_time, update_time
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
-    select 
-    <include refid="Base_Column_List" />
-    from product_suk
-    where sku_id = #{skuId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
-    delete from product_suk
-    where sku_id = #{skuId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.dzhy.manage.entity.ProductSuk" >
-    insert into product_suk (sku_id, product_id, sku_name, 
-      price, create_time, update_time
-      )
-    values (#{skuId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{skuName,jdbcType=VARCHAR}, 
-      #{price,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.dzhy.manage.entity.ProductSuk" >
-    insert into product_suk
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="skuId != null" >
-        sku_id,
-      </if>
-      <if test="productId != null" >
-        product_id,
-      </if>
-      <if test="skuName != null" >
-        sku_name,
-      </if>
-      <if test="price != null" >
-        price,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="skuId != null" >
-        #{skuId,jdbcType=INTEGER},
-      </if>
-      <if test="productId != null" >
-        #{productId,jdbcType=INTEGER},
-      </if>
-      <if test="skuName != null" >
-        #{skuName,jdbcType=VARCHAR},
-      </if>
-      <if test="price != null" >
-        #{price,jdbcType=REAL},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.ProductSuk" >
-    update product_suk
-    <set >
-      <if test="productId != null" >
-        product_id = #{productId,jdbcType=INTEGER},
-      </if>
-      <if test="skuName != null" >
-        sku_name = #{skuName,jdbcType=VARCHAR},
-      </if>
-      <if test="price != null" >
-        price = #{price,jdbcType=REAL},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where sku_id = #{skuId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.ProductSuk" >
-    update product_suk
-    set product_id = #{productId,jdbcType=INTEGER},
-      sku_name = #{skuName,jdbcType=VARCHAR},
-      price = #{price,jdbcType=REAL},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where sku_id = #{skuId,jdbcType=INTEGER}
-  </update>
+<mapper namespace="com.dzhy.manage.dao.ProductSukMapper">
+    <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.ProductSuk">
+        <constructor>
+            <idArg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="sku_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="price" jdbcType="REAL" javaType="java.lang.Float"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        sku_id, product_id, sku_name, price, create_time, update_time
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        select
+        <include refid="Base_Column_List"/>
+        from product_suk
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete
+        from product_suk
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.dzhy.manage.entity.ProductSuk">
+        insert into product_suk (sku_id, product_id, sku_name,
+                                 price, create_time, update_time)
+        values (#{skuId,jdbcType=INTEGER}, #{productId,jdbcType=INTEGER}, #{skuName,jdbcType=VARCHAR},
+                #{price,jdbcType=REAL}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.ProductSuk">
+        insert into product_suk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="skuId != null">
+                sku_id,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="skuName != null">
+                sku_name,
+            </if>
+            <if test="price != null">
+                price,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="skuId != null">
+                #{skuId,jdbcType=INTEGER},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="skuName != null">
+                #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                #{price,jdbcType=REAL},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.ProductSuk">
+        update product_suk
+        <set>
+            <if test="productId != null">
+                product_id = #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="skuName != null">
+                sku_name = #{skuName,jdbcType=VARCHAR},
+            </if>
+            <if test="price != null">
+                price = #{price,jdbcType=REAL},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.ProductSuk">
+        update product_suk
+        set product_id  = #{productId,jdbcType=INTEGER},
+            sku_name    = #{skuName,jdbcType=VARCHAR},
+            price       = #{price,jdbcType=REAL},
+            create_time = #{createTime,jdbcType=TIMESTAMP},
+            update_time = #{updateTime,jdbcType=TIMESTAMP}
+        where sku_id = #{skuId,jdbcType=INTEGER}
+    </update>
+    <insert id="insertBatch" parameterType="list">
+        insert into product_suk (product_id, sku_name, price) values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.productId}, #{item.skuName}, #{item.price})
+        </foreach>
+    </insert>
+    <delete id="deleteBatch" parameterType="list">
+        delete
+        from product_suk
+        where sku_id in
+        <foreach collection="list" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+    <select id="selectByProductId" resultMap="BaseResultMap" parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+        from product_suk
+        where product_id = ${productId}
+    </select>
 </mapper>

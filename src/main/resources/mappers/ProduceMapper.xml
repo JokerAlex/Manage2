@@ -1,226 +1,238 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.dzhy.manage.dao.ProduceMapper" >
-  <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.Produce" >
-    <constructor >
-      <idArg column="produce_id" jdbcType="BIGINT" javaType="java.lang.Long" />
-      <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="produce_name" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="sku_price" jdbcType="REAL" javaType="java.lang.Float" />
-      <arg column="xia_dan" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="mu_gong" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="you_fang" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="bao_zhuang" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="te_ding" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="beijing" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="beijing_teding" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="bendi_hetong" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="waidi_hetong" jdbcType="INTEGER" javaType="java.lang.Integer" />
-      <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-      <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date" />
-    </constructor>
-  </resultMap>
-  <sql id="Base_Column_List" >
-    produce_id, product_id, produce_name, sku_id, sku_price, xia_dan, mu_gong, you_fang, 
+<mapper namespace="com.dzhy.manage.dao.ProduceMapper">
+    <resultMap id="BaseResultMap" type="com.dzhy.manage.entity.Produce">
+        <constructor>
+            <idArg column="produce_id" jdbcType="BIGINT" javaType="java.lang.Long"/>
+            <arg column="product_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="produce_name" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <arg column="sku_id" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="sku_price" jdbcType="REAL" javaType="java.lang.Float"/>
+            <arg column="xia_dan" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="mu_gong" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="you_fang" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="bao_zhuang" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="te_ding" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="beijing" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="beijing_teding" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="bendi_hetong" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="waidi_hetong" jdbcType="INTEGER" javaType="java.lang.Integer"/>
+            <arg column="create_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+            <arg column="update_time" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        </constructor>
+    </resultMap>
+    <sql id="Base_Column_List">
+        produce_id, product_id, produce_name, sku_id, sku_price, xia_dan, mu_gong, you_fang,
     bao_zhuang, te_ding, beijing, beijing_teding, bendi_hetong, waidi_hetong, create_time, 
     update_time
-  </sql>
-  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
-    select 
-    <include refid="Base_Column_List" />
-    from produce
-    where produce_id = #{produceId,jdbcType=BIGINT}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
-    delete from produce
-    where produce_id = #{produceId,jdbcType=BIGINT}
-  </delete>
-  <insert id="insert" parameterType="com.dzhy.manage.entity.Produce" >
-    insert into produce (produce_id, product_id, produce_name, 
-      sku_id, sku_price, xia_dan, 
-      mu_gong, you_fang, bao_zhuang, 
-      te_ding, beijing, beijing_teding, 
-      bendi_hetong, waidi_hetong, create_time, 
-      update_time)
-    values (#{produceId,jdbcType=BIGINT}, #{productId,jdbcType=INTEGER}, #{produceName,jdbcType=VARCHAR}, 
-      #{skuId,jdbcType=INTEGER}, #{skuPrice,jdbcType=REAL}, #{xiaDan,jdbcType=INTEGER}, 
-      #{muGong,jdbcType=INTEGER}, #{youFang,jdbcType=INTEGER}, #{baoZhuang,jdbcType=INTEGER}, 
-      #{teDing,jdbcType=INTEGER}, #{beijing,jdbcType=INTEGER}, #{beijingTeding,jdbcType=INTEGER}, 
-      #{bendiHetong,jdbcType=INTEGER}, #{waidiHetong,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
-  </insert>
-  <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Produce" >
-    insert into produce
-    <trim prefix="(" suffix=")" suffixOverrides="," >
-      <if test="produceId != null" >
-        produce_id,
-      </if>
-      <if test="productId != null" >
-        product_id,
-      </if>
-      <if test="produceName != null" >
-        produce_name,
-      </if>
-      <if test="skuId != null" >
-        sku_id,
-      </if>
-      <if test="skuPrice != null" >
-        sku_price,
-      </if>
-      <if test="xiaDan != null" >
-        xia_dan,
-      </if>
-      <if test="muGong != null" >
-        mu_gong,
-      </if>
-      <if test="youFang != null" >
-        you_fang,
-      </if>
-      <if test="baoZhuang != null" >
-        bao_zhuang,
-      </if>
-      <if test="teDing != null" >
-        te_ding,
-      </if>
-      <if test="beijing != null" >
-        beijing,
-      </if>
-      <if test="beijingTeding != null" >
-        beijing_teding,
-      </if>
-      <if test="bendiHetong != null" >
-        bendi_hetong,
-      </if>
-      <if test="waidiHetong != null" >
-        waidi_hetong,
-      </if>
-      <if test="createTime != null" >
-        create_time,
-      </if>
-      <if test="updateTime != null" >
-        update_time,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides="," >
-      <if test="produceId != null" >
-        #{produceId,jdbcType=BIGINT},
-      </if>
-      <if test="productId != null" >
-        #{productId,jdbcType=INTEGER},
-      </if>
-      <if test="produceName != null" >
-        #{produceName,jdbcType=VARCHAR},
-      </if>
-      <if test="skuId != null" >
-        #{skuId,jdbcType=INTEGER},
-      </if>
-      <if test="skuPrice != null" >
-        #{skuPrice,jdbcType=REAL},
-      </if>
-      <if test="xiaDan != null" >
-        #{xiaDan,jdbcType=INTEGER},
-      </if>
-      <if test="muGong != null" >
-        #{muGong,jdbcType=INTEGER},
-      </if>
-      <if test="youFang != null" >
-        #{youFang,jdbcType=INTEGER},
-      </if>
-      <if test="baoZhuang != null" >
-        #{baoZhuang,jdbcType=INTEGER},
-      </if>
-      <if test="teDing != null" >
-        #{teDing,jdbcType=INTEGER},
-      </if>
-      <if test="beijing != null" >
-        #{beijing,jdbcType=INTEGER},
-      </if>
-      <if test="beijingTeding != null" >
-        #{beijingTeding,jdbcType=INTEGER},
-      </if>
-      <if test="bendiHetong != null" >
-        #{bendiHetong,jdbcType=INTEGER},
-      </if>
-      <if test="waidiHetong != null" >
-        #{waidiHetong,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.Produce" >
-    update produce
-    <set >
-      <if test="productId != null" >
-        product_id = #{productId,jdbcType=INTEGER},
-      </if>
-      <if test="produceName != null" >
-        produce_name = #{produceName,jdbcType=VARCHAR},
-      </if>
-      <if test="skuId != null" >
-        sku_id = #{skuId,jdbcType=INTEGER},
-      </if>
-      <if test="skuPrice != null" >
-        sku_price = #{skuPrice,jdbcType=REAL},
-      </if>
-      <if test="xiaDan != null" >
-        xia_dan = #{xiaDan,jdbcType=INTEGER},
-      </if>
-      <if test="muGong != null" >
-        mu_gong = #{muGong,jdbcType=INTEGER},
-      </if>
-      <if test="youFang != null" >
-        you_fang = #{youFang,jdbcType=INTEGER},
-      </if>
-      <if test="baoZhuang != null" >
-        bao_zhuang = #{baoZhuang,jdbcType=INTEGER},
-      </if>
-      <if test="teDing != null" >
-        te_ding = #{teDing,jdbcType=INTEGER},
-      </if>
-      <if test="beijing != null" >
-        beijing = #{beijing,jdbcType=INTEGER},
-      </if>
-      <if test="beijingTeding != null" >
-        beijing_teding = #{beijingTeding,jdbcType=INTEGER},
-      </if>
-      <if test="bendiHetong != null" >
-        bendi_hetong = #{bendiHetong,jdbcType=INTEGER},
-      </if>
-      <if test="waidiHetong != null" >
-        waidi_hetong = #{waidiHetong,jdbcType=INTEGER},
-      </if>
-      <if test="createTime != null" >
-        create_time = #{createTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
-    </set>
-    where produce_id = #{produceId,jdbcType=BIGINT}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.Produce" >
-    update produce
-    set product_id = #{productId,jdbcType=INTEGER},
-      produce_name = #{produceName,jdbcType=VARCHAR},
-      sku_id = #{skuId,jdbcType=INTEGER},
-      sku_price = #{skuPrice,jdbcType=REAL},
-      xia_dan = #{xiaDan,jdbcType=INTEGER},
-      mu_gong = #{muGong,jdbcType=INTEGER},
-      you_fang = #{youFang,jdbcType=INTEGER},
-      bao_zhuang = #{baoZhuang,jdbcType=INTEGER},
-      te_ding = #{teDing,jdbcType=INTEGER},
-      beijing = #{beijing,jdbcType=INTEGER},
-      beijing_teding = #{beijingTeding,jdbcType=INTEGER},
-      bendi_hetong = #{bendiHetong,jdbcType=INTEGER},
-      waidi_hetong = #{waidiHetong,jdbcType=INTEGER},
-      create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
-    where produce_id = #{produceId,jdbcType=BIGINT}
-  </update>
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from produce
+        where produce_id = #{produceId,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete
+        from produce
+        where produce_id = #{produceId,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.dzhy.manage.entity.Produce">
+        insert into produce (produce_id, product_id, produce_name,
+                             sku_id, sku_price, xia_dan,
+                             mu_gong, you_fang, bao_zhuang,
+                             te_ding, beijing, beijing_teding,
+                             bendi_hetong, waidi_hetong, create_time,
+                             update_time)
+        values (#{produceId,jdbcType=BIGINT}, #{productId,jdbcType=INTEGER}, #{produceName,jdbcType=VARCHAR},
+                #{skuId,jdbcType=INTEGER}, #{skuPrice,jdbcType=REAL}, #{xiaDan,jdbcType=INTEGER},
+                #{muGong,jdbcType=INTEGER}, #{youFang,jdbcType=INTEGER}, #{baoZhuang,jdbcType=INTEGER},
+                #{teDing,jdbcType=INTEGER}, #{beijing,jdbcType=INTEGER}, #{beijingTeding,jdbcType=INTEGER},
+                #{bendiHetong,jdbcType=INTEGER}, #{waidiHetong,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP},
+                #{updateTime,jdbcType=TIMESTAMP})
+    </insert>
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Produce">
+        insert into produce
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="produceId != null">
+                produce_id,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="produceName != null">
+                produce_name,
+            </if>
+            <if test="skuId != null">
+                sku_id,
+            </if>
+            <if test="skuPrice != null">
+                sku_price,
+            </if>
+            <if test="xiaDan != null">
+                xia_dan,
+            </if>
+            <if test="muGong != null">
+                mu_gong,
+            </if>
+            <if test="youFang != null">
+                you_fang,
+            </if>
+            <if test="baoZhuang != null">
+                bao_zhuang,
+            </if>
+            <if test="teDing != null">
+                te_ding,
+            </if>
+            <if test="beijing != null">
+                beijing,
+            </if>
+            <if test="beijingTeding != null">
+                beijing_teding,
+            </if>
+            <if test="bendiHetong != null">
+                bendi_hetong,
+            </if>
+            <if test="waidiHetong != null">
+                waidi_hetong,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="produceId != null">
+                #{produceId,jdbcType=BIGINT},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="produceName != null">
+                #{produceName,jdbcType=VARCHAR},
+            </if>
+            <if test="skuId != null">
+                #{skuId,jdbcType=INTEGER},
+            </if>
+            <if test="skuPrice != null">
+                #{skuPrice,jdbcType=REAL},
+            </if>
+            <if test="xiaDan != null">
+                #{xiaDan,jdbcType=INTEGER},
+            </if>
+            <if test="muGong != null">
+                #{muGong,jdbcType=INTEGER},
+            </if>
+            <if test="youFang != null">
+                #{youFang,jdbcType=INTEGER},
+            </if>
+            <if test="baoZhuang != null">
+                #{baoZhuang,jdbcType=INTEGER},
+            </if>
+            <if test="teDing != null">
+                #{teDing,jdbcType=INTEGER},
+            </if>
+            <if test="beijing != null">
+                #{beijing,jdbcType=INTEGER},
+            </if>
+            <if test="beijingTeding != null">
+                #{beijingTeding,jdbcType=INTEGER},
+            </if>
+            <if test="bendiHetong != null">
+                #{bendiHetong,jdbcType=INTEGER},
+            </if>
+            <if test="waidiHetong != null">
+                #{waidiHetong,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.dzhy.manage.entity.Produce">
+        update produce
+        <set>
+            <if test="productId != null">
+                product_id = #{productId,jdbcType=INTEGER},
+            </if>
+            <if test="produceName != null">
+                produce_name = #{produceName,jdbcType=VARCHAR},
+            </if>
+            <if test="skuId != null">
+                sku_id = #{skuId,jdbcType=INTEGER},
+            </if>
+            <if test="skuPrice != null">
+                sku_price = #{skuPrice,jdbcType=REAL},
+            </if>
+            <if test="xiaDan != null">
+                xia_dan = #{xiaDan,jdbcType=INTEGER},
+            </if>
+            <if test="muGong != null">
+                mu_gong = #{muGong,jdbcType=INTEGER},
+            </if>
+            <if test="youFang != null">
+                you_fang = #{youFang,jdbcType=INTEGER},
+            </if>
+            <if test="baoZhuang != null">
+                bao_zhuang = #{baoZhuang,jdbcType=INTEGER},
+            </if>
+            <if test="teDing != null">
+                te_ding = #{teDing,jdbcType=INTEGER},
+            </if>
+            <if test="beijing != null">
+                beijing = #{beijing,jdbcType=INTEGER},
+            </if>
+            <if test="beijingTeding != null">
+                beijing_teding = #{beijingTeding,jdbcType=INTEGER},
+            </if>
+            <if test="bendiHetong != null">
+                bendi_hetong = #{bendiHetong,jdbcType=INTEGER},
+            </if>
+            <if test="waidiHetong != null">
+                waidi_hetong = #{waidiHetong,jdbcType=INTEGER},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where produce_id = #{produceId,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.dzhy.manage.entity.Produce">
+        update produce
+        set product_id     = #{productId,jdbcType=INTEGER},
+            produce_name   = #{produceName,jdbcType=VARCHAR},
+            sku_id         = #{skuId,jdbcType=INTEGER},
+            sku_price      = #{skuPrice,jdbcType=REAL},
+            xia_dan        = #{xiaDan,jdbcType=INTEGER},
+            mu_gong        = #{muGong,jdbcType=INTEGER},
+            you_fang       = #{youFang,jdbcType=INTEGER},
+            bao_zhuang     = #{baoZhuang,jdbcType=INTEGER},
+            te_ding        = #{teDing,jdbcType=INTEGER},
+            beijing        = #{beijing,jdbcType=INTEGER},
+            beijing_teding = #{beijingTeding,jdbcType=INTEGER},
+            bendi_hetong   = #{bendiHetong,jdbcType=INTEGER},
+            waidi_hetong   = #{waidiHetong,jdbcType=INTEGER},
+            create_time    = #{createTime,jdbcType=TIMESTAMP},
+            update_time    = #{updateTime,jdbcType=TIMESTAMP}
+        where produce_id = #{produceId,jdbcType=BIGINT}
+    </update>
+    <select id="selectBySukId" resultMap="BaseResultMap" parameterType="int">
+        select
+        <include refid="Base_Column_List"/>
+        from produce
+        where sku_id = #{sukId}
+    </select>
+    <update id="updatePrice">
+        update produce
+        set sku_price = #{price}
+        where sku_id = #{sukId}
+    </update>
 </mapper>

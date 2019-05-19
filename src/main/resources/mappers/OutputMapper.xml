@@ -247,4 +247,9 @@
       update_time = #{updateTime,jdbcType=TIMESTAMP}
     where output_id = #{outputId,jdbcType=BIGINT}
   </update>
+  <update id="updatePrice">
+    update output
+    set sku_price = #{price}
+    where sku_id = #{sukId}
+  </update>
 </mapper>

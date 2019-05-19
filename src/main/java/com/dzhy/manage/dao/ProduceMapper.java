@@ -1,7 +1,10 @@
 package com.dzhy.manage.dao;
 
 import com.dzhy.manage.entity.Produce;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface ProduceMapper {
@@ -16,4 +19,8 @@ public interface ProduceMapper {
     int updateByPrimaryKeySelective(Produce record);
 
     int updateByPrimaryKey(Produce record);
+
+    List<Produce> selectBySukId(int sukId);
+
+    int updatePrice(@Param("sukId") int sukId,@Param("price") float price);
 }
