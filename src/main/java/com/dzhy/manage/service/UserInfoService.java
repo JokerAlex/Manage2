@@ -129,6 +129,9 @@ public class UserInfoService {
         }
 
         UserInfo userInfoSource = userInfoMapper.selectByPrimaryKey(CommonUtil.getUserIdFromContext());
+        if (userInfoSource == null) {
+            return Result.isError(ResultEnum.NOT_FOUND.getMessage());
+        }
 
         if (!passwordEncoder.matches(oldPass, userInfoSource.getPassword())) {
             return Result.isError("原密码错误");

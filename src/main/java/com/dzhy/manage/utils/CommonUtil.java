@@ -25,18 +25,30 @@ public class CommonUtil {
         return userInfo == null ? null : userInfo.getUserId();
     }
 
+    /**
+     * 将日期转换为整型数值，例如：2019-05-20 --> 20190520
+     * @return int
+     */
     public static int getDateToIntNow() {
         LocalDate time = LocalDate.now();
         String s = time.toString().replace("-", "");
         return Integer.valueOf(s);
     }
 
+    /**
+     * 将日期转换为整型数值，例如：2019-05-20 --> 20190520
+     * @return int
+     */
     public static int getDateToIntOf(int year, int month, int date) {
         LocalDate time = LocalDate.of(year, month, date);
         String s = time.toString().replace("-", "");
         return Integer.valueOf(s);
     }
 
+    /**
+     * 将月份转换为整型数值，例如：2019-05 --> 201905
+     * @return int
+     */
     public static int getMonthToIntOf(int year, int month) {
         LocalDate time = LocalDate.of(year, month, 1);
         String monthStr = time.toString().substring(0, time.toString().lastIndexOf("-"));
