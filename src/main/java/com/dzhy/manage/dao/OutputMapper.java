@@ -4,6 +4,8 @@ import com.dzhy.manage.entity.Output;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OutputMapper {
     int deleteByPrimaryKey(Long outputId);
@@ -19,4 +21,6 @@ public interface OutputMapper {
     int updateByPrimaryKey(Output record);
 
     int updatePrice(@Param("sukId") int sukId, @Param("price") float price);
+
+    List<Output> selectByConditions(@Param("month") int month, @Param("productName") String productName);
 }

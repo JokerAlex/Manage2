@@ -22,7 +22,12 @@ public class CommonUtil {
 
     public static Integer getUserIdFromContext() {
         UserInfo userInfo = getUserInfoFromContext();
-        return userInfo == null ? null : userInfo.getUserId();
+        return userInfo == null ? -1 : userInfo.getUserId();
+    }
+
+    public static String getUserNameFromContext() {
+        UserInfo userInfo = getUserInfoFromContext();
+        return userInfo == null ? "未知用户" : userInfo.getName();
     }
 
     /**
@@ -40,6 +45,9 @@ public class CommonUtil {
      * @return int
      */
     public static int getDateToIntOf(int year, int month, int date) {
+        year = checkYear(year);
+        month = checkMonth(month);
+        date = checkDate(date);
         LocalDate time = LocalDate.of(year, month, date);
         String s = time.toString().replace("-", "");
         return Integer.valueOf(s);
@@ -50,10 +58,33 @@ public class CommonUtil {
      * @return int
      */
     public static int getMonthToIntOf(int year, int month) {
+        year = checkYear(year);
+        month = checkMonth(month);
         LocalDate time = LocalDate.of(year, month, 1);
         String monthStr = time.toString().substring(0, time.toString().lastIndexOf("-"));
         String s = monthStr.replace("-", "");
         return Integer.valueOf(s);
+    }
+
+    private static int checkYear(int year) {
+        if (year < 2019) {
+            return 2019;
+        }
+        return year;
+    }
+
+    private static int checkMonth(int month) {
+        if (month < 1 || month > 12) {
+            return LocalDate.now().getMonthValue();
+        }
+        return month;
+    }
+
+    private static int checkDate(int date) {
+        if (date < 1 || date > 31) {
+            return LocalDate.now().getDayOfMonth();
+        }
+        return date;
     }
 
     public static void main(String[] args) {

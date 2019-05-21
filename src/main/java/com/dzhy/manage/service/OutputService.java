@@ -1,22 +1,25 @@
 package com.dzhy.manage.service;
 
-import com.dzhy.manage.constants.Constants;
+import com.dzhy.manage.common.Result;
+import com.dzhy.manage.dao.OutputMapper;
+import com.dzhy.manage.dao.OutputRecordMapper;
+import com.dzhy.manage.dao.ProductMapper;
+import com.dzhy.manage.entity.Output;
+import com.dzhy.manage.entity.OutputRecord;
+import com.dzhy.manage.entity.Product;
+import com.dzhy.manage.enums.OutputEnum;
 import com.dzhy.manage.enums.ResultEnum;
 import com.dzhy.manage.exception.GeneralException;
+import com.dzhy.manage.utils.CommonUtil;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @ClassName OutputService
@@ -27,97 +30,71 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class OutputService {
-    /*private final OutputRepository outputRepository;
-    private final ProductRepository productRepository;
+    private final OutputMapper outputMapper;
+    private final ProductMapper productMapper;
+    private final OutputRecordMapper outputRecordMapper;
 
     @Autowired
-    public OutputServiceImpl(OutputRepository outputRepository, ProductRepository productRepository) {
-        this.outputRepository = outputRepository;
-        this.productRepository = productRepository;
+    public OutputService(OutputMapper outputMapper,
+                         ProductMapper productMapper,
+                         OutputRecordMapper outputRecordMapper) {
+        this.outputMapper = outputMapper;
+        this.productMapper = productMapper;
+        this.outputRecordMapper = outputRecordMapper;
     }
 
 
-    @Override
-    public ResponseDTO listOutput(Integer pageNum, Integer pageSize, Integer year, Integer month, String productName) throws ParameterException, GeneralException {
-        if (year == null || month == null) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
-        }
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, Sort.Direction.ASC, "outputProductName");
-        Page<Output> outputPage;
-        if (StringUtils.isBlank(productName)) {
-            outputPage = outputRepository.findAllByOutputYearAndAndOutputMonth(year, month, pageable);
-        } else {
-            outputPage = outputRepository.findAllByOutputYearAndAndOutputMonthAndOutputProductNameContaining(year, month, productName, pageable);
-        }
-        return ResponseDTO.isSuccess(outputPage);
+    public Result listOutput(int pageNum, int pageSize, int year, int month,
+                             String productName) throws GeneralException {
+        int monthInt = CommonUtil.getMonthToIntOf(year, month);
+        PageHelper.startPage(pageNum, pageSize);
+        List<Output> outputs = outputMapper.selectByConditions(monthInt, productName);
+        PageInfo<Output> pageInfo = new PageInfo<>(outputs);
+        return Result.isSuccess(pageInfo);
     }
 
-    @Override
     @Transactional(rollbackFor = GeneralException.class)
-    public ResponseDTO changeOutput(Output output) throws ParameterException, GeneralException {
-        if (output == null || output.getOutputId() == null) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+    public Result changeOutput(Long outputId, String key, int value, String comment) throws GeneralException {
+        if (outputId == null || StringUtils.isBlank(key)) {
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
         //获取 output source
-        Output outputSource = outputRepository.findByOutputId(output.getOutputId());
+        Output outputSource = outputMapper.selectByPrimaryKey(outputId);
         if (outputSource == null) {
-            return ResponseDTO.isError(ResultEnum.NOT_FOUND.getMessage() + "-ID:" + output.getOutputId());
+            return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-ID:" + outputId);
         }
-        Product product = productRepository.findByProductId(outputSource.getOutputProductId());
+        Product product = productMapper.selectByPrimaryKey(outputSource.getProductId());
         if (product == null) {
-            return ResponseDTO.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + output.getOutputProductName());
+            return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-产品:" + outputSource.getOutputName());
         }
-        Output update = new Output();
-        if (output.getOutputXiadan() != null) {
-            update.setOutputXiadan(output.getOutputXiadan());
-        } else if (output.getOutputMugong() != null) {
-            update.setOutputMugong(output.getOutputMugong());
-        } else if (output.getOutputYoufang() != null) {
-            update.setOutputYoufang(output.getOutputYoufang());
-        } else if (output.getOutputBaozhuang() != null) {
-            update.setOutputBaozhuang(output.getOutputBaozhuang());
-            update.setOutputBaozhuangTotalPrice(update.getOutputBaozhuang() * product.getProductPrice());
-        } else if (output.getOutputTeding() != null) {
-            update.setOutputTeding(output.getOutputTeding());
-            update.setOutputTedingTotalPrice(update.getOutputTeding() * product.getProductPrice());
-        } else if (output.getOutputBeijingInput() != null) {
-            update.setOutputBeijingInput(output.getOutputBeijingInput());
-            update.setOutputBeijingInputTotalPrice(update.getOutputBeijingInput() * product.getProductPrice());
-        } else if (output.getOutputBeijingtedingInput() != null) {
-            update.setOutputBeijingtedingInput(output.getOutputBeijingtedingInput());
-            update.setOutputBeijingtedingInputTotalPrice(update.getOutputBeijingtedingInput() * product.getProductPrice());
-        } else if (output.getOutputFactoryOutput() != null) {
-            update.setOutputFactoryOutput(output.getOutputFactoryOutput());
-            update.setOutputFactoryOutputTotalPrice(update.getOutputFactoryOutput() * product.getProductPrice());
-        } else if (output.getOutputTedingFactoryOutput() != null) {
-            update.setOutputTedingFactoryOutput(output.getOutputTedingFactoryOutput());
-            update.setOutputTedingFactoryOutputTotalPrice(update.getOutputTedingFactoryOutput() * product.getProductPrice());
-        } else if (output.getOutputBeijingStock() != null) {
-            update.setOutputBeijingStock(output.getOutputBeijingStock());
-            update.setOutputBeijingStockTotalPrice(update.getOutputBeijingStock() * product.getProductPrice());
-        } else if (output.getOutputBeijingtedingStock() != null) {
-            update.setOutputBeijingtedingStock(output.getOutputBeijingtedingStock());
-            update.setOutputBeijingtedingStockTotalPrice(update.getOutputBeijingtedingStock() * product.getProductPrice());
+        OutputEnum outputEnum = OutputEnum.getOutputEnumByCode(key);
+        if (outputEnum == null) {
+            return Result.isError(ResultEnum.ILLEGAL_PARAMETER.getMessage() + key);
         }
-        UpdateUtils.copyNullProperties(outputSource, update);
+        Output record = this.getOutput(outputSource, outputEnum, value);
+        OutputRecord outputRecord = this.getOutputRecord(outputSource, outputEnum, value, comment);
         try {
-            outputRepository.save(update);
-            log.info("update output success output = {}", update);
+            int count = outputMapper.updateByPrimaryKeySelective(record);
+            log.info("update output success count:{}, outputId:{}, key:{}, value:{}",
+                    count, record.getOutputId(), key, value);
+            count = outputRecordMapper.insertSelective(outputRecord);
+            log.info("insert outputRecord count:{}, outputRecordId:{}",
+                    count, outputRecord.getRecordId());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.UPDATE_ERROR.getMessage());
         }
-        return ResponseDTO.isSuccess();
+        return Result.isSuccess();
     }
 
-    @Override
-    public ResponseDTO exportExcel(Integer year, Integer month, OutputStream outputStream) throws ParameterException, GeneralException {
+    /*
+    public Result exportExcel(Integer year, Integer month, OutputStream outputStream) throws GeneralException, GeneralException {
         if (year == null || month == null) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
         List<Output> outputList = outputRepository.findAllByOutputYearAndAndOutputMonth(year, month);
         if (CollectionUtils.isEmpty(outputList)) {
-            return ResponseDTO.isError("选定的月份没有数据");
+            return Result.isError("选定的月份没有数据");
         }
         Output total = getTotal(outputList);
         outputList.add(total);
@@ -162,17 +139,17 @@ public class OutputService {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.EXPORT_ERROR.getMessage());
         }
-        return ResponseDTO.isSuccess();
+        return Result.isSuccess();
     }
 
-    @Override
-    public ResponseDTO getOutputTotal(Integer year, Integer month) {
+    /*
+    public Result getOutputTotal(Integer year, Integer month) {
         if (year == null || month == null) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
         List<Output> outputList = outputRepository.findAllByOutputYearAndAndOutputMonth(year, month);
         Output total = getTotal(outputList);
-        return ResponseDTO.isSuccess(total);
+        return Result.isSuccess(total);
     }
 
     private Output getTotal(List<Output> outputList) {
@@ -231,4 +208,60 @@ public class OutputService {
                     .setOutputProductName("合计");
         }
     }*/
+
+    private Output getOutput(Output outputSource, OutputEnum outputEnum, int value) {
+        Output record = Output.builder()
+                .outputId(outputSource.getOutputId())
+                .build();
+        switch (outputEnum) {
+            case XIA_DAN:
+                record.setXiaDan(value);
+                break;
+            case MU_GONG:
+                record.setMuGong(value);
+                break;
+            case YOU_FANG:
+                record.setYouFang(value);
+                break;
+            case BAO_ZHUANG:
+                record.setBaoZhuang(value);
+                break;
+            case TE_DING:
+                record.setTeDing(value);
+                break;
+            case BEIJING_INPUT:
+                record.setBeijingInput(value);
+                break;
+            case BEIJING_TEDING_INPUT:
+                record.setBeijingTedingInput(value);
+                break;
+            case FACTORY_OUTPUT:
+                record.setFactoryOutput(value);
+                break;
+            case TEDING_FACTORY_OUTPUT:
+                record.setTedingFactoryOutput(value);
+                break;
+            case BEIJING_STOCK:
+                record.setBeijingStock(value);
+                break;
+            case BEIJING_TEDING_STOCK:
+                record.setBeijingTedingStock(value);
+                break;
+            default:
+                break;
+        }
+        return record;
+    }
+
+    private OutputRecord getOutputRecord(Output outputSource, OutputEnum outputEnum, int value, String comment) {
+        comment = CommonUtil.getUserNameFromContext() + " : " + comment;
+        return OutputRecord.builder()
+                .userId(CommonUtil.getUserIdFromContext())
+                .productId(outputSource.getProductId())
+                .sukId(outputSource.getSukId())
+                .colName(outputEnum.getCode())
+                .value(value)
+                .comments(comment)
+                .build();
+    }
 }

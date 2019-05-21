@@ -266,4 +266,13 @@
         set sku_price = #{price}
         where sku_id = #{sukId}
     </update>
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from output
+        <where>
+            <if test="1 == 1">month = #{month}</if>
+            <if test="productName != null">output_name like CONCAT('%',#{productName},'%')</if>
+        </where>
+    </select>
 </mapper>
