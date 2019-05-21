@@ -1,5 +1,8 @@
 package com.dzhy.manage.service;
 
+import com.dzhy.manage.common.Result;
+import com.dzhy.manage.dao.CategoryMapper;
+import com.dzhy.manage.entity.Category;
 import com.dzhy.manage.enums.ResultEnum;
 import com.dzhy.manage.exception.GeneralException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,87 +24,88 @@ import java.util.List;
 @Slf4j
 public class CategoryService {
 
-    /*private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Autowired
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
+    public CategoryService(CategoryMapper categoryMapper) {
+        this.categoryMapper = categoryMapper;
     }
-
-    @Override
-    public ResponseDTO checkCategoryName(String categoryName) throws ParameterException {
+    
+    public Category checkCategoryName(String categoryName) throws GeneralException {
         if (StringUtils.isBlank(categoryName)) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
-        if (categoryRepository.existsByCategoryName(categoryName)) {
-            return ResponseDTO.isError(ResultEnum.IS_EXIST.getMessage());
-        }
-        return ResponseDTO.isSuccess();
+        return categoryMapper.selectByCategoryName(categoryName);
 
     }
 
-    @Override
+
     @Transactional(rollbackFor = GeneralException.class)
-    public ResponseDTO addCategory(Category category) throws ParameterException, GeneralException {
+    public Result addCategory(Category category) throws GeneralException {
         if (category == null || StringUtils.isBlank(category.getCategoryName())) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
-        ResponseDTO checkName = this.checkCategoryName(category.getCategoryName());
-        if (!checkName.isOk()) {
-            return checkName;
+        Category categorySource = this.checkCategoryName(category.getCategoryName());
+        if (categorySource != null) {
+            return Result.isError("该分类已存在");
         }
-        Category add = new Category().setCategoryName(category.getCategoryName());
+        Category insert = Category.builder()
+                .categoryName(category.getCategoryName())
+                .parentId(category.getParentId())
+                .build();
         try {
-            categoryRepository.save(add);
-            log.info("add category success category = {}", add);
+            int count = categoryMapper.insertSelective(insert);
+            log.info("add category success count:{} categoryId:{}", count, insert.getCategoryId());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.ADD_ERROR.getMessage());
         }
-        return ResponseDTO.isSuccess();
+        return Result.isSuccess();
     }
 
-    @Override
+
     @Transactional(rollbackFor = GeneralException.class)
-    public ResponseDTO updateCategory(Category category) throws ParameterException, GeneralException {
+    public Result updateCategory(Category category) throws GeneralException {
         if (category == null || category.getCategoryId() == null || StringUtils.isBlank(category.getCategoryName())) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
-        ResponseDTO checkName = this.checkCategoryName(category.getCategoryName());
-        if (!checkName.isOk()) {
-            return checkName;
+        Category categorySource = this.checkCategoryName(category.getCategoryName());
+        if (categorySource != null) {
+            return Result.isError("该分类已存在");
         }
-        Category update = categoryRepository.findByCategoryId(category.getCategoryId());
-        update.setCategoryName(category.getCategoryName());
+        Category update = Category.builder()
+                .categoryId(category.getCategoryId())
+                .categoryName(category.getCategoryName())
+                .parentId(category.getParentId())
+                .build();
         try {
-            categoryRepository.save(update);
-            log.info("update category success category = {}", update);
+            int count = categoryMapper.updateByPrimaryKeySelective(update);
+            log.info("update category success count:{} categoryId:{}", count, update.getCategoryId());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.UPDATE_ERROR.getMessage());
         }
-        return ResponseDTO.isSuccess();
+        return Result.isSuccess();
     }
 
-    @Override
     @Transactional(rollbackFor = GeneralException.class)
-    public ResponseDTO deleteCategoryBatch(List<Integer> categoryIds) throws ParameterException, GeneralException {
+    public Result deleteCategoryBatch(List<Integer> categoryIds) throws GeneralException {
         if (CollectionUtils.isEmpty(categoryIds)) {
-            throw new ParameterException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
         try {
-            categoryRepository.deleteByCategoryIdIn(categoryIds);
-            log.info("categoryIds : {}", categoryIds);
+            int count = categoryMapper.deleteBatch(categoryIds);
+            log.info("count:{} categoryIds : {}", count, categoryIds);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.DELETE_ERROR.getMessage());
         }
-        return ResponseDTO.isSuccess();
+        return Result.isSuccess();
     }
 
-    @Override
-    public ResponseDTO listCategory() {
-        List<Category> categoryList = categoryRepository.findAll();
-        return ResponseDTO.isSuccess(categoryList);
-    }*/
+
+    public Result listCategory() {
+        List<Category> categoryList = categoryMapper.selectAll();
+        return Result.isSuccess(categoryList);
+    }
 }
