@@ -1,6 +1,8 @@
 package com.dzhy.manage.service;
 
+import com.dzhy.manage.common.OutputVO;
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.constants.Constants;
 import com.dzhy.manage.dao.OutputMapper;
 import com.dzhy.manage.dao.OutputRecordMapper;
 import com.dzhy.manage.dao.ProductMapper;
@@ -11,15 +13,20 @@ import com.dzhy.manage.enums.OutputEnum;
 import com.dzhy.manage.enums.ResultEnum;
 import com.dzhy.manage.exception.GeneralException;
 import com.dzhy.manage.utils.CommonUtil;
+import com.dzhy.manage.utils.ExcelUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import java.io.OutputStream;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * @ClassName OutputService
@@ -87,52 +94,18 @@ public class OutputService {
         return Result.isSuccess();
     }
 
-    /*
-    public Result exportExcel(Integer year, Integer month, OutputStream outputStream) throws GeneralException, GeneralException {
-        if (year == null || month == null) {
-            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
-        }
-        List<Output> outputList = outputRepository.findAllByOutputYearAndAndOutputMonth(year, month);
+    public Result exportExcel(int year, int month, OutputStream outputStream) throws GeneralException {
+        int monthInt = CommonUtil.getMonthToIntOf(year, month);
+        List<Output> outputList = outputMapper.selectByConditions(monthInt, null);
         if (CollectionUtils.isEmpty(outputList)) {
             return Result.isError("选定的月份没有数据");
         }
-        Output total = getTotal(outputList);
-        outputList.add(total);
-        List<List<String>> list = outputList.stream()
-                .map(output -> {
-                    return Arrays.asList(
-                            output.getOutputProductName(),
-                            String.valueOf(output.getOutputXiadan()),
-                            String.valueOf(output.getOutputMugong()),
-                            String.valueOf(output.getOutputMugongTotalPrice()),
-                            String.valueOf(output.getOutputYoufang()),
-                            String.valueOf(output.getOutputYoufangTotalPrice()),
-                            String.valueOf(output.getOutputBaozhuang()),
-                            String.valueOf(output.getOutputBaozhuangTotalPrice()),
-                            String.valueOf(output.getOutputTeding()),
-                            String.valueOf(output.getOutputTedingTotalPrice()),
-                            String.valueOf(output.getOutputBeijingInput()),
-                            String.valueOf(output.getOutputBeijingInputTotalPrice()),
-                            String.valueOf(output.getOutputBeijingtedingInput()),
-                            String.valueOf(output.getOutputBeijingtedingInputTotalPrice()),
-                            String.valueOf(output.getOutputFactoryOutput()),
-                            String.valueOf(output.getOutputFactoryOutputTotalPrice()),
-                            String.valueOf(output.getOutputTedingFactoryOutput()),
-                            String.valueOf(output.getOutputTedingFactoryOutputTotalPrice()),
-                            String.valueOf(output.getOutputBeijingStock()),
-                            String.valueOf(output.getOutputBeijingStockTotalPrice()),
-                            String.valueOf(output.getOutputBeijingtedingStock()),
-                            String.valueOf(output.getOutputBeijingtedingStockTotalPrice())
-                    );
-                })
-                .collect(Collectors.toList());
+        OutputVO totalVO = this.getTotal(outputList);
+        List<OutputVO> outputVOS = this.transToVo(outputList);
+        outputVOS.add(totalVO);
+        List<List<String>> list = getExportData(outputVOS);
+        List<String> headers = getExportHeaders();
         String title = year + "-" + month + "\t" + Constants.OUTPUT_TITLE;
-        List<String> headers = Arrays.asList(Constants.PRODUCT_NAME, Constants.XIA_DAN, Constants.MU_GONG, Constants.MU_GONG_TOTAL_PRICE,
-                Constants.YOU_FANG, Constants.YOU_FANG_TOTAL_PRICE, Constants.BAO_ZHUANG, Constants.BAOZHUNAG_TOTAL_PRICE, Constants.TE_DING,
-                Constants.TEDING_TOTAL_PRICE, Constants.BEI_JING_INPUT, Constants.BEI_JING_INPUT_TOTAL_PRICE, Constants.BEI_JING_TEDING_INPUT,
-                Constants.BEI_JING_TEDING_INPUT_TOTAL_PRICE, Constants.FACTORY_OUTPUT, Constants.FACTORY_OUTPUT_TOTAL_PRICE,
-                Constants.TEDING_FACTORY_OUTPUT, Constants.TEDING_FACTORY_OUTPUT_TOTAL_PRICE, Constants.BEIJING_STOCK,
-                Constants.BEIJING_STOCK_TOTAL_PRICE, Constants.BEIJINGTEDING_STOCK, Constants.BEIJINGTEDING_STOCK_TOTAL_PRICE);
         try {
             ExcelUtils.exportData(title, headers, list, outputStream);
         } catch (Exception e) {
@@ -142,72 +115,12 @@ public class OutputService {
         return Result.isSuccess();
     }
 
-    /*
-    public Result getOutputTotal(Integer year, Integer month) {
-        if (year == null || month == null) {
-            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
-        }
-        List<Output> outputList = outputRepository.findAllByOutputYearAndAndOutputMonth(year, month);
-        Output total = getTotal(outputList);
-        return Result.isSuccess(total);
+    public Result getOutputTotal(int year, int month) {
+        int monthInt = CommonUtil.getMonthToIntOf(year, month);
+        List<Output> outputList = outputMapper.selectByConditions(monthInt, null);
+        OutputVO totalVO = this.getTotal(outputList);
+        return Result.isSuccess(totalVO);
     }
-
-    private Output getTotal(List<Output> outputList) {
-        if (outputList.size() == 1) {
-            Output output = new Output();
-            UpdateUtils.copyNullProperties(outputList.get(0), output);
-            output.setOutputProductName("合计");
-            return output;
-        } else {
-            return outputList.stream()
-                    .reduce((x, y) -> new Output()
-                            .setOutputXiadan(x.getOutputXiadan() + y.getOutputXiadan())
-                            .setOutputMugong(x.getOutputMugong() + y.getOutputMugong())
-                            .setOutputMugongTotalPrice(x.getOutputMugongTotalPrice() + y.getOutputMugongTotalPrice())
-                            .setOutputYoufang(x.getOutputYoufang() + y.getOutputYoufang())
-                            .setOutputYoufangTotalPrice(x.getOutputYoufangTotalPrice() + y.getOutputYoufangTotalPrice())
-                            .setOutputBaozhuang(x.getOutputBaozhuang() + y.getOutputBaozhuang())
-                            .setOutputBaozhuangTotalPrice(x.getOutputBaozhuangTotalPrice() + y.getOutputBaozhuangTotalPrice())
-                            .setOutputTeding(x.getOutputTeding() + y.getOutputTeding())
-                            .setOutputTedingTotalPrice(x.getOutputTedingTotalPrice() + y.getOutputTedingTotalPrice())
-                            .setOutputBeijingInput(x.getOutputBeijingInput() + y.getOutputBeijingInput())
-                            .setOutputBeijingInputTotalPrice(x.getOutputBeijingInputTotalPrice() + y.getOutputBeijingInputTotalPrice())
-                            .setOutputBeijingtedingInput(x.getOutputBeijingtedingInput() + y.getOutputBeijingtedingInput())
-                            .setOutputBeijingtedingInputTotalPrice(x.getOutputBeijingtedingInputTotalPrice() + y.getOutputBeijingtedingInputTotalPrice())
-                            .setOutputFactoryOutput(x.getOutputFactoryOutput() + y.getOutputFactoryOutput())
-                            .setOutputFactoryOutputTotalPrice(x.getOutputFactoryOutputTotalPrice() + y.getOutputFactoryOutputTotalPrice())
-                            .setOutputTedingFactoryOutput(x.getOutputTedingFactoryOutput() + y.getOutputTedingFactoryOutput())
-                            .setOutputTedingFactoryOutputTotalPrice(x.getOutputTedingFactoryOutputTotalPrice() + y.getOutputTedingFactoryOutputTotalPrice())
-                            .setOutputBeijingStock(x.getOutputBeijingStock() + y.getOutputBeijingStock())
-                            .setOutputBeijingStockTotalPrice(x.getOutputBeijingStockTotalPrice() + y.getOutputBeijingStockTotalPrice())
-                            .setOutputBeijingtedingStock(x.getOutputBeijingtedingStock() + y.getOutputBeijingtedingStock())
-                            .setOutputBeijingtedingStockTotalPrice(x.getOutputBeijingtedingStockTotalPrice() + y.getOutputBeijingtedingStockTotalPrice())
-                    )
-                    .orElse(new Output()
-                            .setOutputXiadan(0)
-                            .setOutputMugong(0)
-                            .setOutputMugongTotalPrice(0.0F)
-                            .setOutputYoufang(0)
-                            .setOutputYoufangTotalPrice(0.0F)
-                            .setOutputBaozhuang(0)
-                            .setOutputBaozhuangTotalPrice(0.0F)
-                            .setOutputTeding(0)
-                            .setOutputTedingTotalPrice(0.0F)
-                            .setOutputBeijingInput(0)
-                            .setOutputBeijingInputTotalPrice(0.0F)
-                            .setOutputBeijingtedingInput(0)
-                            .setOutputBeijingtedingInputTotalPrice(0.0F)
-                            .setOutputFactoryOutput(0)
-                            .setOutputFactoryOutputTotalPrice(0.0F)
-                            .setOutputTedingFactoryOutput(0)
-                            .setOutputTedingFactoryOutputTotalPrice(0.0F)
-                            .setOutputBeijingStock(0)
-                            .setOutputBeijingStockTotalPrice(0.0F)
-                            .setOutputBeijingtedingStock(0)
-                            .setOutputBeijingtedingStockTotalPrice(0.0F))
-                    .setOutputProductName("合计");
-        }
-    }*/
 
     private Output getOutput(Output outputSource, OutputEnum outputEnum, int value) {
         Output record = Output.builder()
@@ -263,5 +176,139 @@ public class OutputService {
                 .value(value)
                 .comments(comment)
                 .build();
+    }
+
+    private OutputVO getTotal(List<Output> outputList) {
+        OutputVO outputVO;
+        if (outputList.size() == 1) {
+            outputVO = this.transToVo(outputList.get(0));
+        } else {
+            outputVO = this.transToVo(outputList).stream()
+                    .reduce((x, y) -> OutputVO.builder()
+                            .xiaDan(x.getXiaDan() + y.getXiaDan())
+                            .muGong(x.getMuGong() + y.getMuGong())
+                            .muGongWorth(x.getMuGongWorth() + y.getMuGongWorth())
+                            .youFang(x.getYouFang() + y.getYouFang())
+                            .youFangWorth(x.getYouFangWorth() + y.getYouFangWorth())
+                            .baoZhuang(x.getBaoZhuang() + y.getBaoZhuang())
+                            .baoZhuangWorth(x.getBaoZhuangWorth() + y.getBaoZhuangWorth())
+                            .teDing(x.getTeDing() + y.getTeDing())
+                            .teDingWorth(x.getTeDingWorth() + y.getTeDingWorth())
+                            .beijingInput(x.getBeijingInput() + y.getBeijingInput())
+                            .beijingInputWorth(x.getBeijingInputWorth() + y.getBeijingInputWorth())
+                            .beijingTedingInput(x.getBeijingTedingInput() + y.getBeijingTedingInput())
+                            .beijingTedingInputWorth(x.getBeijingTedingInputWorth() + y.getBeijingTedingInputWorth())
+                            .factoryOutput(x.getFactoryOutput() + y.getFactoryOutput())
+                            .factoryOutputWorth(x.getFactoryOutputWorth() + y.getFactoryOutputWorth())
+                            .tedingFactoryOutput(x.getTedingFactoryOutput() + y.getTedingFactoryOutput())
+                            .tedingFactoryOutputWorth(x.getTedingFactoryOutputWorth() + y.getTedingFactoryOutputWorth())
+                            .beijingStock(x.getBeijingStock() + y.getBeijingStock())
+                            .beijingStockWorth(x.getBeijingStockWorth() + y.getBeijingStockWorth())
+                            .beijingTedingStock(x.getBeijingTedingStock() + y.getBeijingTedingStock())
+                            .beijingTedingStockWorth(x.getBeijingTedingStockWorth() + y.getBeijingTedingStockWorth())
+                            .build()
+                    )
+                    .orElse(
+                            OutputVO.builder()
+                                    .xiaDan(0)
+                                    .muGong(0)
+                                    .muGongWorth(0f)
+                                    .youFang(0)
+                                    .youFangWorth(0f)
+                                    .baoZhuang(0)
+                                    .baoZhuangWorth(0f)
+                                    .teDing(0)
+                                    .teDingWorth(0f)
+                                    .beijingInput(0)
+                                    .beijingInputWorth(0f)
+                                    .beijingTedingInput(0)
+                                    .beijingTedingInputWorth(0f)
+                                    .factoryOutput(0)
+                                    .factoryOutputWorth(0f)
+                                    .tedingFactoryOutput(0)
+                                    .tedingFactoryOutputWorth(0f)
+                                    .beijingStock(0)
+                                    .beijingStockWorth(0f)
+                                    .beijingTedingStock(0)
+                                    .beijingTedingStockWorth(0f)
+                                    .build()
+                    );
+        }
+        outputVO.setOutputId(null);
+        outputVO.setMonth(null);
+        outputVO.setProductId(null);
+        outputVO.setOutputName("合计");
+        outputVO.setSukId(null);
+        outputVO.setSukPrice(0f);
+        return outputVO;
+    }
+
+    private OutputVO transToVo(Output output) {
+        return new OutputVO(
+                output.getOutputId(),
+                output.getMonth(),
+                output.getProductId(),
+                output.getOutputName(),
+                output.getSukId(),
+                output.getSukPrice(),
+                output.getXiaDan(),
+                output.getMuGong(),
+                output.getYouFang(),
+                output.getBaoZhuang(),
+                output.getTeDing(),
+                output.getBeijingInput(),
+                output.getBeijingTedingInput(),
+                output.getFactoryOutput(),
+                output.getTedingFactoryOutput(),
+                output.getBeijingStock(),
+                output.getBeijingTedingStock(),
+                output.getCreateTime(),
+                output.getUpdateTime()
+        );
+    }
+
+    private List<OutputVO> transToVo(List<Output> outputList) {
+        List<OutputVO> outputVOS = Lists.newArrayList();
+        for (Output output : outputList) {
+            outputVOS.add(this.transToVo(output));
+        }
+        return outputVOS;
+    }
+
+    private List<String> getExportHeaders() {
+        return Arrays.asList(
+                OutputEnum.OUTPUT_NAME.getName(),
+                OutputEnum.SUK_PRICE.getName(),
+                OutputEnum.XIA_DAN.getName(),
+                OutputEnum.MU_GONG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.YOU_FANG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BAO_ZHUANG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.TE_DING.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_INPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_TEDING_INPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.FACTORY_OUTPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.TEDING_FACTORY_OUTPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_STOCK.getName(),OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_TEDING_STOCK.getName(),OutputEnum.OUTPUT_PRICE.getName());
+    }
+
+    private List<List<String>> getExportData(List<OutputVO> outputVOS) {
+        return outputVOS.stream()
+                .map(outputVO -> Arrays.asList(
+                        outputVO.getOutputName(),
+                        String.valueOf(outputVO.getSukPrice()),
+                        String.valueOf(outputVO.getXiaDan()),
+                        String.valueOf(outputVO.getMuGong()), String.valueOf(outputVO.getMuGongWorth()),
+                        String.valueOf(outputVO.getYouFang()), String.valueOf(outputVO.getYouFangWorth()),
+                        String.valueOf(outputVO.getBaoZhuang()), String.valueOf(outputVO.getBaoZhuangWorth()),
+                        String.valueOf(outputVO.getTeDing()), String.valueOf(outputVO.getTeDingWorth()),
+                        String.valueOf(outputVO.getBeijingInput()), String.valueOf(outputVO.getBeijingInputWorth()),
+                        String.valueOf(outputVO.getBeijingTedingInput()), String.valueOf(outputVO.getBeijingTedingInputWorth()),
+                        String.valueOf(outputVO.getFactoryOutput()), String.valueOf(outputVO.getFactoryOutputWorth()),
+                        String.valueOf(outputVO.getTedingFactoryOutput()), String.valueOf(outputVO.getTedingFactoryOutputWorth()),
+                        String.valueOf(outputVO.getBeijingStock()), String.valueOf(outputVO.getBeijingStockWorth()),
+                        String.valueOf(outputVO.getBeijingTedingStock()), String.valueOf(outputVO.getBeijingTedingStockWorth())
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -22,7 +22,9 @@ public enum OutputEnum {
 
     SUK_ID("sukId", "SukID"),
 
-    SUK_PRICE("sukPrice", "SUK价格"),
+    SUK_PRICE("sukPrice", "Suk价格"),
+
+    OUTPUT_PRICE("price", "价值"),
 
     XIA_DAN("xiaDan", "下单"),
 
