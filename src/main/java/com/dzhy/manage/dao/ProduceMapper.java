@@ -25,4 +25,15 @@ public interface ProduceMapper {
     int updatePrice(@Param("sukId") int sukId, @Param("price") float price);
 
     Produce selectByIdAndDate(@Param("productId") Integer productId, @Param("date") Integer date);
+
+    Produce selectByDateAndProductIdAndSukId(@Param("date") Integer date, @Param("productId") Integer productId,
+                                             @Param("sukId") Integer sukId);
+
+    int deleteBatch(@Param("list") List<Integer> produceIds);
+
+    int deleteByDate(int dateInt);
+
+    List<Produce> selectByConditions(@Param("date") Integer date, @Param("produceName") String produceName);
+
+    int insertBatch(@Param("list") List<Produce> produceList);
 }

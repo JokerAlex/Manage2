@@ -52,7 +52,8 @@
                 #{beijingTeding,jdbcType=INTEGER}, #{bendiHetong,jdbcType=INTEGER}, #{waidiHetong,jdbcType=INTEGER},
                 #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Produce">
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Produce"
+            useGeneratedKeys="true" keyProperty="produceId">
         insert into produce
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="produceId != null">
@@ -252,4 +253,47 @@
         from produce
         where date = #{date} and product_id = #{productId}
     </select>
+    <select id="selectByDateAndProductIdAndSukId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from produce
+        where date = #{date} and suk_id = #{sukId} and product_id = #{productId}
+    </select>
+    <delete id="deleteBatch" parameterType="list">
+        delete from produce
+        where produce_id in
+        <foreach collection="list" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteByDate" parameterType="int">
+        delete
+        from produce
+        where date = #{dateInt}
+    </delete>
+    <select id="selectByConditions" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from produce
+        <where>
+            <if test="1 == 1">date = #{date}</if>
+            <if test="produceName != null">produce_name like CONCAT('%',#{produceName},'%')</if>
+        </where>
+    </select>
+    <insert id="insertBatch" parameterType="list">
+        insert into produce (
+        date, product_id, produce_name,
+        suk_id, suk_price, xia_dan,
+        mu_gong, you_fang, bao_zhuang,
+        te_ding, beijing, beijing_teding,
+        bendi_hetong, waidi_hetong)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.date}, #{item.productId}, #{item.produceName},
+            #{item.sukId}, #{item.sukPrice}, #{item.xiaDan},
+            #{item.muGong}, #{item.youFang}, #{item.baoZhuang},
+            #{item.teDing}, #{item.beijing}, #{item.beijingTeding},
+            #{item.bendiHetong}, #{item.waidiHetong})
+        </foreach>
+    </insert>
 </mapper>
