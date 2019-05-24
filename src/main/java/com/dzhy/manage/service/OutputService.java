@@ -16,17 +16,18 @@ import com.dzhy.manage.utils.CommonUtil;
 import com.dzhy.manage.utils.ExcelUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.compress.utils.Lists;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @ClassName OutputService
@@ -56,7 +57,8 @@ public class OutputService {
         int monthInt = CommonUtil.getMonthToIntOf(year, month);
         PageHelper.startPage(pageNum, pageSize);
         List<Output> outputs = outputMapper.selectByConditions(monthInt, productName);
-        PageInfo<Output> pageInfo = new PageInfo<>(outputs);
+        List<OutputVO> outputVOS = this.transToVo(outputs);
+        PageInfo<OutputVO> pageInfo = new PageInfo<>(outputVOS);
         return Result.isSuccess(pageInfo);
     }
 
@@ -268,7 +270,7 @@ public class OutputService {
     }
 
     private List<OutputVO> transToVo(List<Output> outputList) {
-        List<OutputVO> outputVOS = Lists.newArrayList();
+        List<OutputVO> outputVOS = new ArrayList<>(outputList.size());
         for (Output output : outputList) {
             outputVOS.add(this.transToVo(output));
         }
@@ -280,16 +282,16 @@ public class OutputService {
                 OutputEnum.OUTPUT_NAME.getName(),
                 OutputEnum.SUK_PRICE.getName(),
                 OutputEnum.XIA_DAN.getName(),
-                OutputEnum.MU_GONG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.YOU_FANG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.BAO_ZHUANG.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.TE_DING.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.BEIJING_INPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.BEIJING_TEDING_INPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.FACTORY_OUTPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.TEDING_FACTORY_OUTPUT.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.BEIJING_STOCK.getName(),OutputEnum.OUTPUT_PRICE.getName(),
-                OutputEnum.BEIJING_TEDING_STOCK.getName(),OutputEnum.OUTPUT_PRICE.getName());
+                OutputEnum.MU_GONG.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.YOU_FANG.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BAO_ZHUANG.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.TE_DING.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_INPUT.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_TEDING_INPUT.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.FACTORY_OUTPUT.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.TEDING_FACTORY_OUTPUT.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_STOCK.getName(), OutputEnum.OUTPUT_PRICE.getName(),
+                OutputEnum.BEIJING_TEDING_STOCK.getName(), OutputEnum.OUTPUT_PRICE.getName());
     }
 
     private List<List<String>> getExportData(List<OutputVO> outputVOS) {
