@@ -164,4 +164,10 @@
             #{item}
         </foreach>
     </delete>
+    <select id="selectByProductName" parameterType="string" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from product
+        where product_name = #{productName}
+    </select>
 </mapper>

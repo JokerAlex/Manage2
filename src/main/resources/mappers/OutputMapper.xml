@@ -58,7 +58,8 @@
                 #{createTime,jdbcType=TIMESTAMP},
                 #{updateTime,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Output">
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.Output"
+    useGeneratedKeys="true" keyProperty="outputId">
         insert into output
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="outputId != null">
@@ -273,6 +274,16 @@
         <where>
             <if test="1 == 1">month = #{month}</if>
             <if test="productName != null">output_name like CONCAT('%',#{productName},'%')</if>
+        </where>
+    </select>
+    <select id="selectByMonthAndProductIdAndSukId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from output
+        <where>
+            <if test="1 == 1">month = #{month}</if>
+            <if test="sukId != null">suk_id = #{sukId}</if>
+            <if test="productId != null">product_id = #{productId}</if>
         </where>
     </select>
 </mapper>

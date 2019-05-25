@@ -23,4 +23,7 @@ public interface OutputMapper {
     int updatePrice(@Param("sukId") int sukId, @Param("price") float price);
 
     List<Output> selectByConditions(@Param("month") int month, @Param("productName") String productName);
+
+    Output selectByMonthAndProductIdAndSukId(@Param("month") int monthInt,
+                                             @Param("productId") Integer productId, @Param("sukId") Integer sukId);
 }

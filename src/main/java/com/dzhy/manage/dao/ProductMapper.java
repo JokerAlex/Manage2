@@ -29,4 +29,6 @@ public interface ProductMapper {
     List<Product> selectByIds(@Param("list") List<Integer> productIds);
 
     int deleteBatch(@Param("list") List<Integer> productIds);
+
+    Product selectByProductName(@Param("productName") String productName);
 }
