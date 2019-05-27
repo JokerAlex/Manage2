@@ -2,9 +2,9 @@ package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.dao.OutputMapper;
-import com.dzhy.manage.dao.ProductMapper;
-import com.dzhy.manage.dao.ProductSukMapper;
-import com.dzhy.manage.entity.*;
+import com.dzhy.manage.entity.Output;
+import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.entity.ProduceRecord;
 import com.dzhy.manage.enums.ResultEnum;
 import com.dzhy.manage.exception.GeneralException;
 import com.dzhy.manage.utils.CommonUtil;
