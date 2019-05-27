@@ -147,14 +147,7 @@ public class ProduceService {
         //excel文件读取，写入数据库
         List<Map<String, String>> readResult = ExcelUtils.readToMapList(multipartFile.getInputStream());
         List<Produce> produceList = this.getImportDataFromFile(readResult);
-        try {
-            int count = produceMapper.insertBatch(produceList);
-            log.info("import from database, count:{} listSize:{}", count, produceList.size());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new GeneralException(ResultEnum.IMPORT_ERROR.getMessage());
-        }
-        return Result.isSuccess();
+        return this.getInsertBatchResult(produceList);
     }
 
 
@@ -188,14 +181,7 @@ public class ProduceService {
                         .waidiHetong(produce.getWaidiHetong())
                         .build())
                 .collect(Collectors.toList());
-        try {
-            int count = produceMapper.insertBatch(insertList);
-            log.info("import from database, count:{} listSize:{}", count, insertList.size());
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new GeneralException(ResultEnum.IMPORT_ERROR.getMessage());
-        }
-        return Result.isSuccess();
+        return this.getInsertBatchResult(insertList);
     }
 
 
@@ -223,7 +209,7 @@ public class ProduceService {
 
 
     @Transactional(rollbackFor = GeneralException.class)
-    public Result updateProduce(Long produceId, String key, int value, String comment,
+    public Result updateProduce(boolean isFix, Long produceId, String key, int value, String comment,
                                 int flag) throws GeneralException {
         if (produceId == null || StringUtils.isBlank(comment)) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
@@ -237,25 +223,14 @@ public class ProduceService {
             throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-ID:" + produceId);
         }
         AbstractUpdateService abstractUpdateService = this.getUpdateService(produceEnum);
-        return abstractUpdateService.update(origin, value, comment, flag);
-    }
-
-
-    @Transactional(rollbackFor = GeneralException.class)
-    public Result fixProduce(Long produceId, String key, int value, String comment) throws GeneralException {
-        if (produceId == null || StringUtils.isBlank(comment)) {
-            throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
+        if (isFix) {
+            return abstractUpdateService.fix(origin, value, comment);
+        } else {
+            if (CommonUtil.getDateToIntNow() != origin.getDate()) {
+                throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage() + "-日期" + origin.getDate());
+            }
+            return abstractUpdateService.update(origin, value, comment, flag);
         }
-        ProduceEnum produceEnum = ProduceEnum.getProduceEnumByCode(key);
-        if (produceEnum == null) {
-            return Result.isError(ResultEnum.ILLEGAL_PARAMETER.getMessage() + key);
-        }
-        Produce origin = produceMapper.selectByPrimaryKey(produceId);
-        if (origin == null) {
-            throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-ID:" + produceId);
-        }
-        AbstractUpdateService abstractUpdateService = this.getUpdateService(produceEnum);
-        return abstractUpdateService.fix(origin, value, comment);
     }
 
     @Transactional(rollbackFor = GeneralException.class)
@@ -310,6 +285,17 @@ public class ProduceService {
         List<Produce> produceList = produceMapper.selectByConditions(dateInt, null);
         ProduceVO totalVo = this.getTotal(produceList);
         return Result.isSuccess(totalVo);
+    }
+
+    private Result getInsertBatchResult(List<Produce> insertList) {
+        try {
+            int count = produceMapper.insertBatch(insertList);
+            log.info("import from database, count:{} listSize:{}", count, insertList.size());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            throw new GeneralException(ResultEnum.IMPORT_ERROR.getMessage());
+        }
+        return Result.isSuccess();
     }
 
     private ProduceVO getTotal(List<Produce> produceList) {

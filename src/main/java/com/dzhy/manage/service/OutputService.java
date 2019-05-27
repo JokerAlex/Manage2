@@ -63,7 +63,7 @@ public class OutputService {
     }
 
     @Transactional(rollbackFor = GeneralException.class)
-    public Result changeOutput(Long outputId, String key, int value, String comment) throws GeneralException {
+    public Result fixOutput(Long outputId, String key, int value, String comment) throws GeneralException {
         if (outputId == null || StringUtils.isBlank(key)) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }

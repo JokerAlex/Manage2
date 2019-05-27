@@ -1,10 +1,14 @@
 package com.dzhy.manage.entity;
 
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Date;
 
 @Builder
+@ToString
+@EqualsAndHashCode
 public class UserInfo {
     private Integer userId;
 

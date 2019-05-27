@@ -22,49 +22,37 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public abstract class AbstractUpdateService {
 
-    private  OutputMapper outputMapper;
-    private ProductMapper productMapper;
-    private ProductSukMapper productSukMapper;
+    private OutputMapper outputMapper;
 
     @Autowired
     public void setOutputMapper(OutputMapper outputMapper) {
         this.outputMapper = outputMapper;
     }
 
-    @Autowired
-    public void setProductSukMapper(ProductSukMapper productSukMapper) {
-        this.productSukMapper = productSukMapper;
-    }
-
-    @Autowired
-    public void setProductMapper(ProductMapper productMapper) {
-        this.productMapper = productMapper;
-    }
-
     public abstract Result update(Produce origin, int value, String comment, int flag);
 
     public abstract Result fix(Produce origin, int value, String comment);
 
-    private Output getOutput(int monthInt, int productId, int sukId) {
-        Output output = outputMapper.selectByMonthAndProductIdAndSukId(monthInt, productId, sukId);
+    private Output getOutput(int monthInt, Produce origin) {
+        Output output = outputMapper.selectByMonthAndProductIdAndSukId(monthInt, origin.getProductId(), origin.getSukId());
         if (output != null) {
             return output;
         }
-        Product product = productMapper.selectByPrimaryKey(productId);
+        /*Product product = productMapper.selectByPrimaryKey(productId);
         if (product == null) {
             throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-产品ID" + productId);
         }
         ProductSuk suk = productSukMapper.selectByPrimaryKey(sukId);
         if (suk == null) {
             throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-SukID" + sukId);
-        }
-            output = Output.builder()
-                    .month(monthInt)
-                    .productId(productId)
-                    .outputName(product.getProductName() + ":" + suk.getSukName())
-                    .sukId(sukId)
-                    .sukPrice(suk.getPrice())
-                    .build();
+        }*/
+        output = Output.builder()
+                .month(monthInt)
+                .productId(origin.getProductId())
+                .outputName(origin.getProduceName())
+                .sukId(origin.getSukId())
+                .sukPrice(origin.getSukPrice())
+                .build();
         try {
             int count = outputMapper.insertSelective(output);
             log.info("insert output, count:{} outputId:{}", count, output.getOutputId());
