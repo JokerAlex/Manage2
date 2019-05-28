@@ -1,7 +1,11 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.constants.Constants;
+import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.OutputEnum;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,68 +21,103 @@ public class BeijingTedingUpdateService extends AbstractUpdateService {
 
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (flag == Constants.NOT_OUTPUT) {
+            return this.isNotOutput(origin, value, comment);
+        } else {
+            return this.isOutput(origin, value, comment);
+        }
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijingTeding(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BEIJING_TEDING, value, comment);
     }
 
-    /*
-    private Result updateBeiJingTeDing(Produce param, Produce produceSource, Produce update, Output outputSource, int flag) {
-        if (param.getProduceBeijingteding() == 0) {
-            return Result.isError("更新值不能为 0 ");
+    /**
+     * 进度：北京特定增加，特定减少
+     * 产值：特定增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isNotOutput(Produce origin, int value, String comment) {
+        if (origin.getTeDing() - value < 0) {
+            log.info("origin.getTeDing() - value = {}", origin.getTeDing() - value);
+            return Result.isError("特定库存不足");
         }
-        //判断是否为北京特定出货
-        if (flag == Constants.NOT_OUTPUT) {
-            //进度：北京特定增加，特定减少
-            //产值：特定增加
-            if (param.getProduceBeijingteding() > produceSource.getProduceTeding()) {
-                return Result.isError("特定库存不足");
-            } else if (param.getProduceBeijingteding() + produceSource.getProduceBeijingteding() < 0) {
-                return Result.isError("退单量超过北京特定库存");
-            } else if (outputSource.getOutputBeijingtedingInput() + param.getProduceBeijingteding() < 0) {
-                return Result.isError("退单后北京特定入库为负数");
-            } else if (outputSource.getOutputBeijingtedingStock() + param.getProduceBeijingteding() < 0) {
-                return Result.isError("退单后北京特定剩余为负数");
-            }
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBeijingteding(param.getProduceBeijingteding() + produceSource.getProduceBeijingteding());
-            produceSource.setProduceTeding(produceSource.getProduceTeding() - param.getProduceBeijingteding());
-            update.setProduceBeijingtedingComment(commentAppend(produceSource.getProduceBeijingtedingComment(), "",
-                    produceSource.getProduceBeijingteding(), param.getProduceBeijingtedingComment()));
-            //特定产值
-            outputSource.setOutputTeding(outputSource.getOutputTeding() + param.getProduceBeijingteding());
-            outputSource.setOutputTedingTotalPrice(outputSource.getOutputTeding() * product.getProductPrice());
-            //北京特定入库
-            outputSource.setOutputBeijingtedingInput(outputSource.getOutputBeijingtedingInput() + param.getProduceBeijingteding());
-            outputSource.setOutputBeijingtedingInputTotalPrice(outputSource.getOutputBeijingtedingInput() * product.getProductPrice());
-            //北京特定剩余增加
-            outputSource.setOutputBeijingtedingStock(outputSource.getOutputBeijingtedingStock() + param.getProduceBeijingteding());
-            outputSource.setOutputBeijingtedingStockTotalPrice(outputSource.getOutputBeijingtedingStock() * product.getProductPrice());
-        } else {
-            //出货
-            //进度：北京特定减少./pa
-            //产值：北京特定剩余减少
-            if (param.getProduceBeijingteding() > produceSource.getProduceBeijingteding()) {
-                return Result.isError("北京特定库存不足");
-            }
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBeijingteding(produceSource.getProduceBeijingteding() - param.getProduceBeijingteding());
-            update.setProduceBeijingtedingComment(commentAppend(produceSource.getProduceBeijingtedingComment(), "出货",
-                    produceSource.getProduceBeijingteding(), param.getProduceBeijingtedingComment()));
-            //北京剩余，减少
-            outputSource.setOutputBeijingtedingStock(outputSource.getOutputBeijingtedingStock() - param.getProduceBeijingteding());
-            outputSource.setOutputBeijingtedingStockTotalPrice(outputSource.getOutputBeijingtedingStock() * product.getProductPrice());
+        if (origin.getBeijingTeding() + value < 0) {
+            log.info("origin.getBeijingTeding() + value = {}", origin.getBeijingTeding() + value);
+            return Result.isError("退单量超过北京特定库存");
         }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getTeDing() + value < 0) {
+            log.info("outputOrigin.getTeDing() + value = {}", outputOrigin.getTeDing() + value);
+            return Result.isError("退单后特定产值为负值");
+        }
+        if (outputOrigin.getBeijingTedingInput() + value < 0) {
+            log.info("outputOrigin.getBeijingTedingInput() + value = {}", outputOrigin.getBeijingTedingInput() + value);
+            return Result.isError("退单后北京特定入库为负值");
+        }
+        if (outputOrigin.getBeijingTedingStock() + value < 0) {
+            log.info("outputOrigin.getBeijingTedingStock() + value = {}", outputOrigin.getBeijingTedingStock() + value);
+            return Result.isError("退单后北京特定剩余为负值");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijingTeding(origin.getBeijingTeding() - value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .teDing(outputOrigin.getTeDing() + value)
+                .beijingTedingInput(outputOrigin.getBeijingTedingInput() + value)
+                .beijingTedingStock(outputOrigin.getBeijingTedingStock() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BEIJING_TEDING.getName(), value,
+                ProduceEnum.TE_DING.getName(), -value,
+                //北京特定入库，北京特定库存
+                OutputEnum.BEIJING_TEDING_INPUT.getName(), value,
+                comment);
+    }
 
-        return Result.isSuccess();
-    }*/
+    /**
+     * 出货
+     * 进度：北京特定减少
+     * 产值：北京特定剩余减少
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isOutput(Produce origin, int value, String comment) {
+        if (origin.getBeijingTeding() - value < 0) {
+            log.info("origin.getBeijingTeding() - value = {}", origin.getBeijingTeding() - value);
+            return Result.isError("北京特定库存不足");
+        }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getBeijingTedingStock() - value < 0) {
+            log.info("outputOrigin.getBeijingTedingStock() - value = {}", outputOrigin.getBeijingTedingStock() - value);
+            return Result.isError("北京特定库存不足");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijingTeding(origin.getBeijingTeding() - value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .beijingTedingStock(outputOrigin.getBeijingTedingStock() - value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BEIJING_TEDING.getName(), -value,
+                OutputEnum.BEIJING_TEDING_STOCK.getName(), -value,
+                "", 0,
+                comment);
+    }
 }

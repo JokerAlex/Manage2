@@ -45,7 +45,8 @@
                 #{value3,jdbcType=INTEGER}, #{comments,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP},
                 #{updateTime,jdbcType=TIMESTAMP})
     </insert>
-    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.ProduceRecord">
+    <insert id="insertSelective" parameterType="com.dzhy.manage.entity.ProduceRecord"
+            useGeneratedKeys="true" keyProperty="recordId">
         insert into produce_record
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="recordId != null">

@@ -2,6 +2,7 @@ package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,28 +16,34 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BendiHetongUpdateService extends AbstractUpdateService {
 
+    /**
+     * 本地合同自增自减
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @param flag
+     * @return
+     */
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (origin.getBendiHetong() + value < 0) {
+            log.info("origin.getBendiHetong() + value = {}", origin.getBendiHetong() + value);
+            return Result.isError("退单量超过已有本地合同量");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .bendiHetong(origin.getBendiHetong() + value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BENDI_HETONG, value, comment);
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .bendiHetong(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BENDI_HETONG, value, comment);
     }
-
-    /*
-    private Result updateBenDiHeTong(Produce param, Produce produceSource, Produce update) {
-        //进度：本地合同自己增加，减少
-        //产值：没有变化
-        if (param.getProduceBendihetong() == 0) {
-            return Result.isError("更新值不能为 0 ");
-        } else if (param.getProduceBendihetong() + produceSource.getProduceBendihetong() < 0) {
-            return Result.isError("退单量超过已有本地合同量");
-        }
-        update.setProduceBendihetong(param.getProduceBendihetong() + produceSource.getProduceBendihetong());
-        update.setProduceBendihetongComment(commentAppend(produceSource.getProduceBendihetongComment(), "",
-                param.getProduceBendihetong(), param.getProduceBendihetongComment()));
-        return Result.isSuccess();
-    }*/
 }

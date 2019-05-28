@@ -1,7 +1,10 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.OutputEnum;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,33 +18,52 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MuGongUpdateService extends AbstractUpdateService {
 
+    /**
+     * 进度：木工增加，下单减少
+     * 产值：下单增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @param flag
+     * @return
+     */
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        /*
-    private Result updateMuGong(Produce param, Produce produceSource, Produce update, Output outputSource) {
-        //进度：木工增加，下单减少
-        //产值：下单增加
-        if (param.getProduceMugong() == 0) {
-            return Result.isError("更新值不能为 0 ");
-        } else if (param.getProduceMugong() > produceSource.getProduceXiadan()) {
+        if (origin.getXiaDan() - value < 0) {
+            log.info("origin.getXiaDan() - value = {}", origin.getXiaDan() - value);
             return Result.isError("下单库存不足");
-        } else if (param.getProduceMugong() + produceSource.getProduceMugong() < 0) {
+        }
+        if (origin.getMuGong() + value < 0) {
+            log.info("origin.getXiaDan() + value = {}", origin.getXiaDan() + value);
             return Result.isError("退单超过木工库存");
-        } else if (outputSource.getOutputXiadan() + param.getProduceMugong() < 0) {
+        }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getXiaDan() + value < 0) {
             return Result.isError("退单后下单产值为负数");
         }
-        update.setProduceMugong(param.getProduceMugong() + produceSource.getProduceMugong());
-        update.setProduceMugongComment(commentAppend(produceSource.getProduceMugongComment(), "",
-                param.getProduceMugong(), param.getProduceMugongComment()));
-        produceSource.setProduceXiadan(produceSource.getProduceXiadan() - param.getProduceMugong());
-        outputSource.setOutputXiadan(outputSource.getOutputXiadan() + param.getProduceMugong());
-        return Result.isSuccess();
-    }*/
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .xiaDan(origin.getXiaDan() - value)
+                .muGong(origin.getMuGong() + value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .xiaDan(outputOrigin.getXiaDan() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.MU_GONG.getName(), value,
+                ProduceEnum.XIA_DAN.getName(), -value,
+                OutputEnum.XIA_DAN.getName(), value,
+                comment);
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .muGong(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.MU_GONG, value, comment);
     }
 }

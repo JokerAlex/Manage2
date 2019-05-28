@@ -1,7 +1,11 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.constants.Constants;
+import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.OutputEnum;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,69 +21,97 @@ public class BaoZhuangUpdateService extends AbstractUpdateService {
 
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (flag == Constants.NOT_OUTPUT) {
+            return this.isNotOutput(origin, value, comment);
+        } else {
+            return this.isOutput(origin, value, comment);
+        }
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .baoZhuang(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BAO_ZHUANG, value, comment);
     }
 
-    /*
-    private Result updateBaoZhuang(Produce param, Produce produceSource, Produce update, Output outputSource, int flag) {
-        if (param.getProduceBaozhuang() == 0) {
-            return Result.isError("更新值不能为 0 ");
+    /**
+     * 进度：包装增加，油房减少
+     * 产值：油房增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isNotOutput(Produce origin, int value, String comment) {
+        if (origin.getYouFang() - value < 0) {
+            log.info("origin.getYouFang() - value = {}", origin.getYouFang() - value);
+            return Result.isError("油房库存不足");
         }
+        if (origin.getBaoZhuang() + value < 0) {
+            log.info("origin.getBaoZhuang() + value = {}", origin.getBaoZhuang() + value);
+            return Result.isError("退单超过包装库存");
+        }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getYouFang() + value < 0) {
+            return Result.isError("退单后油房产值为负数");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .youFang(origin.getYouFang() - value)
+                .baoZhuang(origin.getBaoZhuang() + value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .youFang(outputOrigin.getYouFang() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BAO_ZHUANG.getName(), value,
+                ProduceEnum.YOU_FANG.getName(), -value,
+                OutputEnum.YOU_FANG.getName(), value,
+                comment);
+    }
 
-        //判断是否工厂出货
-        if (flag == Constants.NOT_OUTPUT) {
-            //进度：包装增加，油房减少
-            //产值：油房增加
-            if (param.getProduceBaozhuang() > produceSource.getProduceYoufang()) {
-                return Result.isError("油房库存不足");
-            } else if (param.getProduceBaozhuang() + produceSource.getProduceBaozhuang() < 0) {
-                return Result.isError("退单量超过包装库存");
-            } else if (outputSource.getOutputYoufang() + param.getProduceBaozhuang() < 0) {
-                return Result.isError("退单后油房产值为负数");
-            }
-            //获取产品价格
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBaozhuang(param.getProduceBaozhuang() + produceSource.getProduceBaozhuang());
-            update.setProduceBaozhuangComment(commentAppend(produceSource.getProduceBaozhuangComment(), "",
-                    param.getProduceBaozhuang(), param.getProduceBaozhuangComment()));
-            produceSource.setProduceYoufang(produceSource.getProduceYoufang() - param.getProduceBaozhuang());
-            //油房产值
-            outputSource.setOutputYoufang(outputSource.getOutputYoufang() + param.getProduceBaozhuang());
-            outputSource.setOutputYoufangTotalPrice(outputSource.getOutputYoufang() * product.getProductPrice());
-        } else {
-            //工厂直接出货
-            //进度：包装减少
-            //产值：工厂出货增加，包装产值增加
-            if (param.getProduceBaozhuang() > produceSource.getProduceBaozhuang()) {
-                return Result.isError("包装库存不足");
-            } else if (outputSource.getOutputBaozhuang() + param.getProduceBaozhuang() < 0) {
-                return Result.isError("退单后包装产值为负数");
-            } else if (outputSource.getOutputFactoryOutput() + param.getProduceBaozhuang() < 0) {
-                return Result.isError("退单后工厂出货产值为负数");
-            }
-            //获取产品价格
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBaozhuang(produceSource.getProduceBaozhuang() - param.getProduceBaozhuang());
-            update.setProduceBaozhuangComment(commentAppend(produceSource.getProduceBaozhuangComment(), "工厂出货",
-                    param.getProduceBaozhuang(), param.getProduceBaozhuangComment()));
-            //包装产值
-            outputSource.setOutputBaozhuang(outputSource.getOutputBaozhuang() + param.getProduceBaozhuang());
-            outputSource.setOutputBaozhuangTotalPrice(outputSource.getOutputBaozhuang() * product.getProductPrice());
-            //工厂出货
-            outputSource.setOutputFactoryOutput(outputSource.getOutputFactoryOutput() + param.getProduceBaozhuang());
-            outputSource.setOutputFactoryOutputTotalPrice(outputSource.getOutputFactoryOutput() * product.getProductPrice());
+    /**
+     * 工厂直接出货
+     * 进度：包装减少
+     * 产值：工厂出货增加，包装产值增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isOutput(Produce origin, int value, String comment) {
+        if (origin.getBaoZhuang() - value < 0) {
+            log.info("origin.getBaoZhuang() - value = {}", origin.getBaoZhuang() - value);
+            return Result.isError("包装库存不足");
         }
-        return Result.isSuccess();
-    }*/
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getBaoZhuang() + value < 0) {
+            log.info("outputOrigin.getBaoZhuang() + value = {}", outputOrigin.getBaoZhuang() + value);
+            return Result.isError("退单后包装产值为负数");
+        }
+        if (outputOrigin.getFactoryOutput() + value < 0) {
+            log.info("outputOrigin.getFactoryOutput() + value = {}", outputOrigin.getFactoryOutput() + value);
+            return Result.isError("退单后工厂出货产值为负数");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .baoZhuang(origin.getBaoZhuang() - value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .baoZhuang(outputOrigin.getBaoZhuang() + value)
+                .factoryOutput(outputOrigin.getFactoryOutput() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BAO_ZHUANG.getName(), -value,
+                OutputEnum.BAO_ZHUANG.getName(), value,
+                OutputEnum.FACTORY_OUTPUT.getName(), value,
+                comment);
+    }
 }

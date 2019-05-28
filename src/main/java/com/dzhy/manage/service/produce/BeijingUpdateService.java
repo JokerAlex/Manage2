@@ -1,7 +1,11 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.constants.Constants;
+import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.OutputEnum;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -17,71 +21,103 @@ public class BeijingUpdateService extends AbstractUpdateService {
 
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (flag == Constants.NOT_OUTPUT) {
+            return this.isNotOutput(origin, value, comment);
+        } else {
+            return this.isOutput(origin, value, comment);
+        }
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijing(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BEIJING, value, comment);
     }
 
-    /*
-    private Result updateBeiJing(Produce param, Produce produceSource, Produce update, Output outputSource, int flag) {
-        if (param.getProduceBeijing() == 0) {
-            return Result.isError("更新值不能为 0 ");
+    /**
+     * 进度：北京增加，包装减少
+     * 产值：包装增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isNotOutput(Produce origin, int value, String comment) {
+        if (origin.getBaoZhuang() - value < 0) {
+            log.info("origin.getBaoZhuang() - value = {}", origin.getBaoZhuang() - value);
+            return Result.isError("包装库存不足");
         }
-
-        // flag 判断更新是否为北京出货
-        if (flag == Constants.NOT_OUTPUT) {
-            //进度：北京增加，包装减少
-            //产值：包装增加
-            if (param.getProduceBeijing() > produceSource.getProduceBaozhuang()) {
-                return Result.isError("包装库存不足");
-            } else if (param.getProduceBeijing() + produceSource.getProduceBeijing() < 0) {
-                return Result.isError("退单量超过包装库存");
-            } else if (outputSource.getOutputBaozhuang() + param.getProduceBeijing() < 0) {
-                return Result.isError("退单后包装产值为负数");
-            } else if (outputSource.getOutputBeijingInput() + param.getProduceBeijing() < 0) {
-                return Result.isError("退单后北京入库为负数");
-            } else if (outputSource.getOutputBeijingStock() + param.getProduceBeijing() < 0) {
-                return Result.isError("退单后北京剩余为负数");
-            }
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBeijing(param.getProduceBeijing() + produceSource.getProduceBeijing());
-            produceSource.setProduceBaozhuang(produceSource.getProduceBaozhuang() - param.getProduceBeijing());
-            update.setProduceBeijingComment(commentAppend(produceSource.getProduceBeijingComment(), "",
-                    produceSource.getProduceBeijing(), param.getProduceBeijingComment()));
-            //包装产值增加
-            outputSource.setOutputBaozhuang(outputSource.getOutputBaozhuang() + param.getProduceBeijing());
-            outputSource.setOutputBaozhuangTotalPrice(outputSource.getOutputBaozhuang() * product.getProductPrice());
-            //北京入库
-            outputSource.setOutputBeijingInput(outputSource.getOutputBeijingInput() + param.getProduceBeijing());
-            outputSource.setOutputBeijingInputTotalPrice(outputSource.getOutputBeijingInput() * product.getProductPrice());
-            //北京剩余增加
-            outputSource.setOutputBeijingStock(outputSource.getOutputBeijingStock() + param.getProduceBeijing());
-            outputSource.setOutputBeijingStockTotalPrice(outputSource.getOutputBeijingStock() * product.getProductPrice());
-        } else {
-            //出货
-            //进度：北京减少
-            //产值：北京剩余减少
-            if (param.getProduceBeijing() > produceSource.getProduceBeijing()) {
-                return Result.isError("北京库存不足");
-            }
-            Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-            if (product == null) {
-                return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-            }
-            update.setProduceBeijing(produceSource.getProduceBeijing() - param.getProduceBeijing());
-            update.setProduceBeijingComment(commentAppend(produceSource.getProduceBeijingComment(), "出货",
-                    produceSource.getProduceBeijing(), param.getProduceBeijingComment()));
-            //北京剩余，减少
-            outputSource.setOutputBeijingStock(outputSource.getOutputBeijingStock() - param.getProduceBeijing());
-            outputSource.setOutputBeijingStockTotalPrice(outputSource.getOutputBeijingStock() * product.getProductPrice());
+        if (origin.getBeijing() + value < 0) {
+            log.info("origin.getBeijing() + value = {}", origin.getBeijing() + value);
+            return Result.isError("退单量超过北京库存");
         }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getBaoZhuang() + value < 0) {
+            log.info("outputOrigin.getBaoZhuang() + value = {}", outputOrigin.getBaoZhuang() + value);
+            return Result.isError("退单后包装产值为负值");
+        }
+        if (outputOrigin.getBeijingInput() + value < 0) {
+            log.info("outputOrigin.getBeijingInput() + value = {}", outputOrigin.getBeijingInput() + value);
+            return Result.isError("退单后北京入库为负值");
+        }
+        if (outputOrigin.getBeijingStock() + value < 0) {
+            log.info("outputOrigin.getBeijingStock() + value = {}", outputOrigin.getBeijingStock() + value);
+            return Result.isError("退单后北京剩余为负值");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijing(origin.getBeijing() - value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .baoZhuang(outputOrigin.getBaoZhuang() + value)
+                .beijingInput(outputOrigin.getBeijingInput() + value)
+                .beijingStock(outputOrigin.getBeijingStock() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BEIJING.getName(), value,
+                ProduceEnum.BAO_ZHUANG.getName(), -value,
+                //北京入库，北京库存
+                OutputEnum.BEIJING_INPUT.getName(), value,
+                comment);
+    }
 
-        return Result.isSuccess();
-    }*/
+    /**
+     * 出货
+     * 进度：北京减少
+     * 产值：北京剩余减少
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @return
+     */
+    private Result isOutput(Produce origin, int value, String comment) {
+        if (origin.getBeijing() - value < 0) {
+            log.info("origin.getBeijing() - value = {}", origin.getBeijing() - value);
+            return Result.isError("北京库存不足");
+        }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getBeijingStock() - value < 0) {
+            log.info("outputOrigin.getBeijingStock() - value = {}", outputOrigin.getBeijingStock() - value);
+            return Result.isError("北京库存不足");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .beijing(origin.getBeijing() - value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .beijingStock(outputOrigin.getBeijingStock() - value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.BEIJING.getName(), -value,
+                OutputEnum.BEIJING_STOCK.getName(), -value,
+                "", 0,
+                comment);
+    }
 }

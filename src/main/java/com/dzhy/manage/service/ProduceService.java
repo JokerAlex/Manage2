@@ -4,9 +4,11 @@ import com.dzhy.manage.common.ProduceVO;
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.constants.Constants;
 import com.dzhy.manage.dao.ProduceMapper;
+import com.dzhy.manage.dao.ProduceRecordMapper;
 import com.dzhy.manage.dao.ProductMapper;
 import com.dzhy.manage.dao.ProductSukMapper;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.entity.ProduceRecord;
 import com.dzhy.manage.entity.Product;
 import com.dzhy.manage.entity.ProductSuk;
 import com.dzhy.manage.enums.ProduceEnum;
@@ -45,6 +47,7 @@ public class ProduceService {
     private final ProduceMapper produceMapper;
     private final ProductMapper productMapper;
     private final ProductSukMapper productSukMapper;
+    private final ProduceRecordMapper produceRecordMapper;
 
     private final BaoZhuangUpdateService baoZhuangUpdateService;
     private final BeijingTedingUpdateService beijingTedingUpdateService;
@@ -60,6 +63,7 @@ public class ProduceService {
     public ProduceService(ProduceMapper produceMapper,
                           ProductMapper productMapper,
                           ProductSukMapper productSukMapper,
+                          ProduceRecordMapper produceRecordMapper,
                           BaoZhuangUpdateService baoZhuangUpdateService,
                           BeijingTedingUpdateService beijingTedingUpdateService,
                           BeijingUpdateService beijingUpdateService,
@@ -72,6 +76,7 @@ public class ProduceService {
         this.produceMapper = produceMapper;
         this.productMapper = productMapper;
         this.productSukMapper = productSukMapper;
+        this.produceRecordMapper = produceRecordMapper;
         this.baoZhuangUpdateService = baoZhuangUpdateService;
         this.beijingTedingUpdateService = beijingTedingUpdateService;
         this.beijingUpdateService = beijingUpdateService;
@@ -113,9 +118,22 @@ public class ProduceService {
                 .build();
 
         try {
-            //todo 添加record记录
             int count = produceMapper.insertSelective(insert);
             log.info("add produce success, count:{}, produceId:{}", count, insert.getProduceId());
+            ProduceRecord record = ProduceRecord.builder()
+                    .userId(CommonUtil.getUserIdFromContext())
+                    .productId(insert.getProductId())
+                    .sukId(insert.getSukId())
+                    .colName1(ProduceEnum.XIA_DAN.getName())
+                    .value1(num)
+                    .colName2("")
+                    .value2(0)
+                    .colName3("")
+                    .value3(0)
+                    .comments(CommonUtil.getUserNameFromContext() + ":" + comment)
+                    .build();
+            count = produceRecordMapper.insertSelective(record);
+            log.info("insert produceRecord, count:{}, recordId:{}", count, record.getRecordId());
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.ADD_ERROR.getMessage());
@@ -224,8 +242,16 @@ public class ProduceService {
         }
         AbstractUpdateService abstractUpdateService = this.getUpdateService(produceEnum);
         if (isFix) {
+            if (value < 0) {
+                log.info("value:{} < 0", value);
+                return Result.isError("更新后，下单值为负数");
+            }
             return abstractUpdateService.fix(origin, value, comment);
         } else {
+            if (value == 0) {
+                log.info("更新值为 0, key:{}", key);
+                return Result.isError("更新值不能为 0");
+            }
             if (CommonUtil.getDateToIntNow() != origin.getDate()) {
                 throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage() + "-日期" + origin.getDate());
             }

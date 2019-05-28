@@ -37,7 +37,7 @@ public class CommonUtil {
     public static int getDateToIntNow() {
         LocalDate time = LocalDate.now();
         String s = time.toString().replace("-", "");
-        return Integer.valueOf(s);
+        return Integer.parseInt(s);
     }
 
     /**
@@ -50,7 +50,7 @@ public class CommonUtil {
         date = checkDate(date);
         LocalDate time = LocalDate.of(year, month, date);
         String s = time.toString().replace("-", "");
-        return Integer.valueOf(s);
+        return Integer.parseInt(s);
     }
 
     /**
@@ -63,7 +63,18 @@ public class CommonUtil {
         LocalDate time = LocalDate.of(year, month, 1);
         String monthStr = time.toString().substring(0, time.toString().lastIndexOf("-"));
         String s = monthStr.replace("-", "");
-        return Integer.valueOf(s);
+        return Integer.parseInt(s);
+    }
+
+    /**
+     * 将月份转换为整型数值，例如：2019-05 --> 201905
+     * @return int
+     */
+    public static int getMonthToIntOfNow() {
+        LocalDate time = LocalDate.now();
+        String monthStr = time.toString().substring(0, time.toString().lastIndexOf("-"));
+        String s = monthStr.replace("-", "");
+        return Integer.parseInt(s);
     }
 
     private static int checkYear(int year) {
@@ -91,5 +102,6 @@ public class CommonUtil {
         System.out.println(getDateToIntNow());
         System.out.println(getDateToIntOf(2019, 5, 19));
         System.out.println(getMonthToIntOf(2019, 5));
+        System.out.println(getMonthToIntOfNow());
     }
 }

@@ -2,15 +2,17 @@ package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.dao.OutputMapper;
+import com.dzhy.manage.dao.ProduceMapper;
+import com.dzhy.manage.dao.ProduceRecordMapper;
 import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
 import com.dzhy.manage.entity.ProduceRecord;
+import com.dzhy.manage.enums.ProduceEnum;
 import com.dzhy.manage.enums.ResultEnum;
 import com.dzhy.manage.exception.GeneralException;
 import com.dzhy.manage.utils.CommonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * @ClassName AbstractUpdateService
@@ -18,34 +20,41 @@ import org.springframework.stereotype.Service;
  * @Author alex
  * @Date 2019-05-25
  **/
-@Service
 @Slf4j
 public abstract class AbstractUpdateService {
 
     private OutputMapper outputMapper;
+    private ProduceMapper produceMapper;
+    private ProduceRecordMapper produceRecordMapper;
 
     @Autowired
     public void setOutputMapper(OutputMapper outputMapper) {
         this.outputMapper = outputMapper;
     }
 
+    @Autowired
+    public void setProduceMapper(ProduceMapper produceMapper) {
+        this.produceMapper = produceMapper;
+    }
+
+    @Autowired
+    public void setProduceRecordMapper(ProduceRecordMapper produceRecordMapper) {
+        this.produceRecordMapper = produceRecordMapper;
+    }
+
     public abstract Result update(Produce origin, int value, String comment, int flag);
 
     public abstract Result fix(Produce origin, int value, String comment);
 
-    private Output getOutput(int monthInt, Produce origin) {
+    Output getOutput(Produce origin) {
+        return this.getOutput(CommonUtil.getMonthToIntOfNow(), origin);
+    }
+
+    Output getOutput(int monthInt, Produce origin) {
         Output output = outputMapper.selectByMonthAndProductIdAndSukId(monthInt, origin.getProductId(), origin.getSukId());
         if (output != null) {
             return output;
         }
-        /*Product product = productMapper.selectByPrimaryKey(productId);
-        if (product == null) {
-            throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-产品ID" + productId);
-        }
-        ProductSuk suk = productSukMapper.selectByPrimaryKey(sukId);
-        if (suk == null) {
-            throw new GeneralException(ResultEnum.NOT_FOUND.getMessage() + "-SukID" + sukId);
-        }*/
         output = Output.builder()
                 .month(monthInt)
                 .productId(origin.getProductId())
@@ -63,15 +72,33 @@ public abstract class AbstractUpdateService {
         return output;
     }
 
-    private ProduceRecord makeRecord(int productId, int sukId,
-                                     String colName1, int value1,
-                                     String colName2, int value2,
-                                     String colName3, int value3,
-                                     String comment) {
-        return ProduceRecord.builder()
+    Result getResult(Produce origin, Produce update,
+                     ProduceEnum enum1, int value1,
+                     String comment) {
+        ProduceRecord record = ProduceRecord.builder()
                 .userId(CommonUtil.getUserIdFromContext())
-                .productId(productId)
-                .sukId(sukId)
+                .productId(origin.getProductId())
+                .sukId(origin.getSukId())
+                .colName1(enum1.getName())
+                .value1(value1)
+                .colName2("")
+                .value2(0)
+                .colName3("")
+                .value3(0)
+                .comments(CommonUtil.getUserNameFromContext() + ":" + comment)
+                .build();
+        return getResult(update, record, null);
+    }
+
+    Result getResult(Produce origin, Produce update, Output outputUpdate,
+                     String colName1, int value1,
+                     String colName2, int value2,
+                     String colName3, int value3,
+                     String comment) {
+        ProduceRecord record = ProduceRecord.builder()
+                .userId(CommonUtil.getUserIdFromContext())
+                .productId(origin.getProductId())
+                .sukId(origin.getSukId())
                 .colName1(colName1)
                 .value1(value1)
                 .colName2(colName2)
@@ -80,5 +107,23 @@ public abstract class AbstractUpdateService {
                 .value3(value3)
                 .comments(CommonUtil.getUserNameFromContext() + ":" + comment)
                 .build();
+        return getResult(update, record, outputUpdate);
+    }
+
+    private Result getResult(Produce update, ProduceRecord record, Output outputUpdate) {
+        try {
+            int count = produceMapper.updateByPrimaryKeySelective(update);
+            log.info("update produce, count:{}, produceId:{}", count, update.getProduceId());
+            if (outputUpdate != null) {
+                count = outputMapper.updateByPrimaryKeySelective(outputUpdate);
+                log.info("update output, count:{}, outputId:{}", count, outputUpdate.getOutputId());
+            }
+            count = produceRecordMapper.insertSelective(record);
+            log.info("insert produceRecord, count:{}, recordId:{}", count, record.getRecordId());
+        } catch (Exception e) {
+            log.error("update produce error", e);
+            throw new GeneralException(ResultEnum.UPDATE_ERROR.getMessage());
+        }
+        return Result.isSuccess();
     }
 }

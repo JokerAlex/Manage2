@@ -1,7 +1,10 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
+import com.dzhy.manage.entity.Output;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.OutputEnum;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,41 +18,52 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class YouFangUpdateService extends AbstractUpdateService {
 
+    /**
+     * 进度：油房增加，木工减少
+     * 产值：木工增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @param flag
+     * @return
+     */
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (origin.getMuGong() - value < 0) {
+            log.info("origin.getMuGong() - value = {}", origin.getMuGong() - value);
+            return Result.isError("木工库存不足");
+        }
+        if (origin.getYouFang() + value < 0) {
+            log.info("origin.getYouFang() + value = {}", origin.getYouFang() + value);
+            return Result.isError("退单超过油房库存");
+        }
+        Output outputOrigin = this.getOutput(origin);
+        if (outputOrigin.getMuGong() + value < 0) {
+            return Result.isError("退单后木工产值为负数");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .muGong(origin.getMuGong() - value)
+                .youFang(origin.getYouFang() + value)
+                .build();
+        Output outputUpdate = Output.builder()
+                .outputId(outputOrigin.getOutputId())
+                .muGong(outputOrigin.getMuGong() + value)
+                .build();
+        return getResult(origin, update, outputUpdate,
+                ProduceEnum.YOU_FANG.getName(), value,
+                ProduceEnum.MU_GONG.getName(), -value,
+                OutputEnum.MU_GONG.getName(), value,
+                comment);
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .youFang(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.YOU_FANG, value, comment);
     }
-
-    /*
-    private Result updateYouFang(Produce param, Produce produceSource, Produce update, Output outputSource) {
-        //进度：油房增加，木工减少
-        //产值：木工增加
-        if (param.getProduceYoufang() == 0) {
-            return Result.isError("更新值不能为 0 ");
-        } else if (param.getProduceYoufang() > produceSource.getProduceMugong()) {
-            return Result.isError("木工库存不足");
-        } else if (param.getProduceYoufang() + produceSource.getProduceYoufang() < 0) {
-            return Result.isError("退单超过油房库存");
-        } else if (outputSource.getOutputMugong() + param.getProduceYoufang() < 0) {
-            return Result.isError("退单后木工产值为负数");
-        }
-        //获取产品价格
-        Product product = productMapper.findByProductId(produceSource.getProduceProductId());
-        if (product == null) {
-            return Result.isError(ResultEnum.NOT_FOUND.getMessage() + "-名称:" + produceSource.getProduceProductName());
-        }
-        update.setProduceYoufang(param.getProduceYoufang() + produceSource.getProduceYoufang());
-        update.setProduceYoufangComment(commentAppend(produceSource.getProduceYoufangComment(), "",
-                param.getProduceYoufang(), param.getProduceYoufangComment()));
-        produceSource.setProduceMugong(produceSource.getProduceMugong() - param.getProduceYoufang());
-        //木工产值
-        outputSource.setOutputMugong(outputSource.getOutputMugong() + param.getProduceYoufang());
-        outputSource.setOutputMugongTotalPrice(outputSource.getOutputMugong() * product.getProductPrice());
-        return Result.isSuccess();
-    }*/
 }

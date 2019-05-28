@@ -2,6 +2,7 @@ package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,28 +16,34 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WaidiHetongUpdateService extends AbstractUpdateService {
 
+    /**
+     * 外地合同自增自减
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @param flag
+     * @return
+     */
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        return null;
+        if (origin.getWaidiHetong() + value < 0) {
+            log.info("origin.getWaidiHetong() + value = {}", origin.getWaidiHetong() + value);
+            return Result.isError("退单量超过已有外地合同量");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .waidiHetong(origin.getWaidiHetong() + value)
+                .build();
+        return getResult(origin, update, ProduceEnum.WAIDI_HETONG, value, comment);
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .bendiHetong(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.BENDI_HETONG, value, comment);
     }
-
-    /*
-    private Result updateWaiDiHeTong(Produce param, Produce produceSource, Produce update) {
-        //进度：外地合同自己增加，减少
-        //产值：没有变化
-        if (param.getProduceWaidihetong() == 0) {
-            return Result.isError("更新值不能为 0 ");
-        } else if (param.getProduceWaidihetong() + produceSource.getProduceWaidihetong() < 0) {
-            return Result.isError("退单量超过已有外地合同量");
-        }
-        update.setProduceWaidihetong(param.getProduceWaidihetong() + produceSource.getProduceWaidihetong());
-        update.setProduceWaidihetongComment(commentAppend(produceSource.getProduceWaidihetongComment(), "",
-                param.getProduceWaidihetong(), param.getProduceWaidihetongComment()));
-        return Result.isSuccess();
-    }*/
 }

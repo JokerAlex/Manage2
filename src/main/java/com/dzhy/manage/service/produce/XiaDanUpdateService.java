@@ -1,11 +1,9 @@
 package com.dzhy.manage.service.produce;
 
 import com.dzhy.manage.common.Result;
-import com.dzhy.manage.dao.ProduceMapper;
-import com.dzhy.manage.dao.ProduceRecordMapper;
 import com.dzhy.manage.entity.Produce;
+import com.dzhy.manage.enums.ProduceEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,35 +16,34 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class XiaDanUpdateService extends AbstractUpdateService {
 
-    private final ProduceMapper produceMapper;
-    private final ProduceRecordMapper produceRecordMapper;
-
-    @Autowired
-    public XiaDanUpdateService(ProduceMapper produceMapper, ProduceRecordMapper produceRecordMapper) {
-        this.produceMapper = produceMapper;
-        this.produceRecordMapper = produceRecordMapper;
-    }
-
+    /**
+     * 进度：下单增加
+     *
+     * @param origin
+     * @param value
+     * @param comment
+     * @param flag
+     * @return
+     */
     @Override
     public Result update(Produce origin, int value, String comment, int flag) {
-        /*private Result updateXiaDan(Produce param, Produce produceSource, Produce update) {
-            //下单增加
-            if (param.getProduceXiadan() == 0) {
-                return Result.isError("更新值不能为 0 ");
-            }
-            if (param.getProduceXiadan() + produceSource.getProduceXiadan() < 0) {
-                return Result.isError("更新后，下单值为负数");
-            }
-            update.setProduceXiadan(param.getProduceXiadan() + produceSource.getProduceXiadan());
-            update.setProduceXiadanComment(commentAppend(produceSource.getProduceXiadanComment(), "",
-                    param.getProduceXiadan(), param.getProduceXiadanComment()));
-            return Result.isSuccess();
-        }*/
-        return null;
+        if (origin.getXiaDan() + value < 0) {
+            log.info("更新后，下单值为负数:{}", origin.getXiaDan() + value);
+            return Result.isError("更新后，下单值为负数");
+        }
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .xiaDan(origin.getXiaDan() + value)
+                .build();
+        return getResult(origin, update, ProduceEnum.XIA_DAN, value, comment);
     }
 
     @Override
     public Result fix(Produce origin, int value, String comment) {
-        return null;
+        Produce update = Produce.builder()
+                .produceId(origin.getProduceId())
+                .xiaDan(value)
+                .build();
+        return getResult(origin, update, ProduceEnum.XIA_DAN, value, comment);
     }
 }
