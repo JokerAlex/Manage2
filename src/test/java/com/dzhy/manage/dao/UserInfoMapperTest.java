@@ -9,7 +9,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 /**
  * @ClassName UserInfoMapperTest
- * @Description TODO
+ * @Description test
  * @Author alex
  * @Date 2019-05-18
  **/

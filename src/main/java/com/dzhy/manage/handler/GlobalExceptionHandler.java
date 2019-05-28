@@ -1,4 +1,4 @@
-package com.dzhy.manage.controller;
+package com.dzhy.manage.handler;
 
 import com.dzhy.manage.common.Result;
 import com.dzhy.manage.exception.GeneralException;

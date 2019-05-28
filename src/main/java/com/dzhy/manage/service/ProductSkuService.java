@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * @ClassName ProductSkuService
- * @Description TODO
+ * @Description suk service
  * @Author alex
  * @Date 2019-05-19
  **/
