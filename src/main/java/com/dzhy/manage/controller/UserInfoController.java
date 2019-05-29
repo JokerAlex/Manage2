@@ -23,8 +23,8 @@ import java.util.List;
 @RequestMapping("/user")
 @Api(value = "用户信息", description = "用户信息管理")
 public class UserInfoController {
-    private final UserInfoService userInfoService;
 
+    private final UserInfoService userInfoService;
 
     @Autowired
     public UserInfoController(UserInfoService userInfoService) {
@@ -44,18 +44,49 @@ public class UserInfoController {
     }
 
     @ApiOperation(value = "添加", notes = "添加新用户")
-    @ApiImplicitParam(name = "userInfo", value = "用户实体类", required = true, dataTypeClass = UserInfo.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username", value = "用户名", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(name = "roles", value = "角色", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(name = "status", value = "账号状态，0-禁用，1-可用", required = true, dataTypeClass = Integer.class)
+    })
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'ADMIN')")
     @PostMapping()
-    public Result addUserInfo(@RequestBody UserInfo userInfo) {
+    public Result addUserInfo(@RequestParam(value = "username") String username,
+                              @RequestParam(value = "password") String password,
+                              @RequestParam(value = "name") String name,
+                              @RequestParam(value = "roles") String roles,
+                              @RequestParam(value = "status", defaultValue = "1") int status) {
+        UserInfo userInfo = UserInfo.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .roles(roles)
+                .status(status)
+                .build();
         return userInfoService.insertUserInfo(userInfo);
     }
 
     @ApiOperation(value = "用户更新", notes = "更新用户用户信息")
-    @ApiImplicitParam(name = "userInfo", value = "用户实体类", required = true, dataTypeClass = UserInfo.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户Id", required = true, dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataTypeClass = String.class),
+            @ApiImplicitParam(name = "roles", value = "角色", dataTypeClass = String.class),
+            @ApiImplicitParam(name = "status", value = "账号状态，0-禁用，1-可用", dataTypeClass = Integer.class)
+    })
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'ADMIN', 'OPERATOR', 'UESER')")
     @PutMapping()
-    public Result updateUserInfoOther(@RequestBody UserInfo userInfo) {
+    public Result updateUserInfoOther(@RequestParam(value = "userId") Integer userId,
+                                      @RequestParam(value = "name") String name,
+                                      @RequestParam(value = "roles", required = false) String roles,
+                                      @RequestParam(value = "status", required = false, defaultValue = "1") int status) {
+        UserInfo userInfo = UserInfo.builder()
+                .userId(userId)
+                .name(name)
+                .roles(roles)
+                .status(status)
+                .build();
         return userInfoService.updateUserInfo(userInfo);
     }
 
@@ -72,11 +103,15 @@ public class UserInfoController {
     }
 
     @ApiOperation(value = "重置密码", notes = "重置密码")
-    @ApiImplicitParam(name = "pass", value = "新密码", required = true, dataTypeClass = String.class)
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "userId", value = "用户id", required = true, dataTypeClass = Integer.class),
+            @ApiImplicitParam(name = "pass", value = "新密码", required = true, dataTypeClass = String.class)
+    })
     @PreAuthorize("hasAnyAuthority('SYS_ADMIN', 'ADMIN')")
     @PostMapping("/reset")
-    public Result resetPassword(@RequestParam(value = "pass") String pass) {
-        return userInfoService.resetPassword(pass);
+    public Result resetPassword(@RequestParam(value = "userId") Integer userId,
+                                @RequestParam(value = "pass") String pass) {
+        return userInfoService.resetPassword(userId, pass);
     }
 
     @ApiOperation(value = "删除", notes = "删除用户")

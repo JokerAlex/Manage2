@@ -71,7 +71,7 @@ public class ProductSkuService {
         boolean price = source.getPrice().equals(productSuk.getPrice());
         ProductSuk update = ProductSuk.builder()
                 .sukId(productSuk.getSukId())
-                .productId(productSuk.getProductId())
+                // todo 名称修改 -> 进度和产值名称
                 .sukName(productSuk.getSukName())
                 .price(productSuk.getPrice())
                 .build();

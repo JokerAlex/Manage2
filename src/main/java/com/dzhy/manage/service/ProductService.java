@@ -69,8 +69,8 @@ public class ProductService {
     }
 
     @Transactional(rollbackFor = GeneralException.class)
-    public Result insertProduct(Product product, List<ProductSuk> productSukList) throws GeneralException {
-        if (product == null || CollectionUtils.isEmpty(productSukList)) {
+    public Result insertProduct(Product product, MultipartFile multipartFile) throws GeneralException {
+        if (product == null) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
 
@@ -81,13 +81,14 @@ public class ProductService {
         Product insert = Product.builder()
                 .productName(product.getProductName())
                 .categoryId(product.getCategoryId())
+                .comments(product.getComments())
                 .build();
         try {
             int count = productMapper.insertSelective(insert);
             int productId = insert.getProductId();
             log.info("add product success productId:{}, count:{}", productId, count);
             //存储sku信息
-            productSukList = productSukList.stream()
+            /*productSukList = productSukList.stream()
                     .map(sku -> ProductSuk.builder()
                             .productId(productId)
                             .sukName(sku.getSukName())
@@ -95,7 +96,10 @@ public class ProductService {
                             .build())
                     .collect(Collectors.toList());
             count = productSukMapper.insertBatch(productSukList);
-            log.info("add productSku, productSukList:{}, count:{}", count, productSukList.size());
+            log.info("add productSku, productSukList:{}, count:{}", count, productSukList.size());*/
+            if (multipartFile != null) {
+                this.updateHeadImg(productId, multipartFile);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new GeneralException(ResultEnum.ADD_ERROR.getMessage());

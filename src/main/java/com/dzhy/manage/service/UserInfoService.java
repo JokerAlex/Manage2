@@ -102,11 +102,11 @@ public class UserInfoService {
     }
 
     @Transactional(rollbackFor = GeneralException.class)
-    public Result resetPassword(String pass) throws GeneralException {
-        if (StringUtils.isBlank(pass)) {
+    public Result resetPassword(Integer userId, String pass) throws GeneralException {
+        if (userId == null || StringUtils.isBlank(pass)) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
-        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(CommonUtil.getUserIdFromContext());
+        UserInfo userInfo = userInfoMapper.selectByPrimaryKey(userId);
         if (userInfo == null) {
             return Result.isError(ResultEnum.NOT_FOUND.getMessage());
         }

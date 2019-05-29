@@ -90,7 +90,7 @@ public class ProduceService {
 
     @Transactional(rollbackFor = GeneralException.class)
     public Result insertProduce(Integer productId, Integer sukId, Integer num, String comment) throws GeneralException {
-        if (productId == null || sukId == null || num == null || StringUtils.isBlank(comment)) {
+        if (productId == null || sukId == null || num == null || num <= 0 || StringUtils.isBlank(comment)) {
             throw new GeneralException(ResultEnum.ILLEGAL_PARAMETER.getMessage());
         }
         Product product = productMapper.selectByPrimaryKey(productId);

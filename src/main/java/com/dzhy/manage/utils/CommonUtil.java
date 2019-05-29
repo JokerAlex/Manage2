@@ -1,9 +1,15 @@
 package com.dzhy.manage.utils;
 
 import com.dzhy.manage.entity.UserInfo;
+import com.dzhy.manage.exception.GeneralException;
 import com.dzhy.manage.security.entity.JwtUserDetails;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 
 /**
@@ -12,6 +18,7 @@ import java.time.LocalDate;
  * @Author alex
  * @Date 2019-05-18
  **/
+@Slf4j
 public class CommonUtil {
     private CommonUtil() {}
 
@@ -75,6 +82,21 @@ public class CommonUtil {
         String monthStr = time.toString().substring(0, time.toString().lastIndexOf("-"));
         String s = monthStr.replace("-", "");
         return Integer.parseInt(s);
+    }
+
+    public static String getEncoderFileName(HttpServletRequest request, String fileName) {
+        String encoderFileName;
+        try {
+            if (request.getHeader("User-Agent").toUpperCase().indexOf("MSIE") > 0) {
+                encoderFileName = URLEncoder.encode(fileName, "UTF-8");
+            } else {
+                encoderFileName = new String(fileName.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
+            }
+        } catch (UnsupportedEncodingException e) {
+            log.error(e.getMessage());
+            throw new GeneralException("编码错误");
+        }
+        return encoderFileName;
     }
 
     private static int checkYear(int year) {
