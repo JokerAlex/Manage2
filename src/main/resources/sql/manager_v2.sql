@@ -166,3 +166,10 @@ CREATE TABLE `user_info` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT '用户信息表';
+
+-- ----------------------------
+-- Records of user_info
+-- ----------------------------
+BEGIN;
+INSERT INTO `user_info` (username, password, name, roles, status) VALUES ('admin', '$2a$10$sw34isaLbnsQjJAkGmB03uDNrWFad/Hy5N2Z4kTnIpx9MdVnq9yEi', 'test', 'SYS_ADMIN', 1);
+COMMIT;
